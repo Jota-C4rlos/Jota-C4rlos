@@ -2,7 +2,7 @@
 
 
 - 🚗💻 Contemporâneamente  estou  trabalhando de motorista apliactivo. Em minhas horas vagas estudo.
-- 👨‍💻 Estudando HTML, CSS, Js.
+- 👨‍💻💻 Estudando <strong>HTML, CSS, JS.</strong>
 #
 #
 <div align="center">
