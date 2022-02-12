@@ -8,7 +8,7 @@
 <div align="center">
   <a href="https://github.com/Jota-C4rlos">
   <img height="180em" src="https://github-readme-stats.vercel.app/api?username=Jota-C4rlos&show_icons=true&theme=merko&include_all_commits=true&count_private=true"/>
-  <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Jota-C4rlos&layout=compact&langs_count=7&theme=chartreuse-dark"/>
+  <img height="130em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Jota-C4rlos&layout=compact&langs_count=7&theme=chartreuse-dark"/>
 </div>
 
 <div style="display: inline_block"><br>
