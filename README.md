@@ -6,12 +6,14 @@
 #
 #
 <div align="center">
+	<PAT_1>
   <a href="https://github.com/Jota-C4rlos">
   <img height="170em" src="https://github-readme-stats.vercel.app/api?username=Jota-C4rlos&show_icons=true&theme=merko&include_all_commits=true&count_private=true"/>
   <img height="130em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Jota-C4rlos&layout=compact&langs_count=7&theme=chartreuse-dark"/>
 </div>
 
 <div style="display: inline_block"><br>
+	<PAT_1>
   <img align="center" alt="Jota-HTML" height="30" width="70" src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
   <img align="center" alt="Jota-Css" height="30" width="70" src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
   <img align="center" alt="Jota-JS" height="30" width="70" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
