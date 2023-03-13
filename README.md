@@ -1,8 +1,8 @@
 ## Olá! Sou o josé Carlos amante de programção, estudante de sistemas para internet. Trilhando um caminho para adquirir conhecimento e sabedoria.
 
 
-- 🚗💻 Contemporâneamente  estou  trabalhando de motorista apliactivo. Em minhas horas vagas estudo.
-- 👨‍💻💻 Estudando <strong>HTML, CSS, JS.</strong>
+- 🚗💻 Contemporâneamente  estou  trabalhando de Gestor de Tráfego/Social Media. Em minhas horas vagas estudo.
+- 👨‍💻💻 Estudando <strong>HTML, CSS, JS, Java.</strong>
 #
 #
 <div align="center">
@@ -16,7 +16,7 @@
 	
   <img align="center" alt="Jota-HTML" height="30" width="70" src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
   <img align="center" alt="Jota-Css" height="30" width="70" src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
-  <img align="center" alt="Jota-JS" height="30" width="70" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+  <img align="center" alt="Jota-JS" height="30" width="70" src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">     <img align="center" alt="Jota-Java" height="30" width="70" src="https://img.shields.io/badge/Java-E1DFDF?style=for-the-badge&logo=java&logoColor=red">
   <img align="right" alt="Jota-Pic" height="250" style="border_adius:100px;" src="Imagem/pngwing.com.png">
 </div>
 
