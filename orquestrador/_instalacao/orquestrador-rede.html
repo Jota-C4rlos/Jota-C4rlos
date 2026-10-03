@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Orquestrador Network</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=JetBrains+Mono:wght@400;600;700&family=Mulish:wght@400;600;800&display=swap">
+<style>
+/* Layout: one screen. A living graph fills the viewport; a thin HUD on top,
+   a dock at the bottom, and a detail panel that takes the bottom of a
+   portrait screen or the right side of a landscape one. Single dark look. */
+:root{
+  color-scheme: dark;
+  --ground:#161616; --raise:#262626; --ink:#f4f3f2;
+  --mute:rgba(244,243,242,.68); --line:rgba(244,243,242,.22); --faint:rgba(244,243,242,.1);
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Mulish','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --mono:'JetBrains Mono',Consolas,ui-monospace,monospace;
+  --gutter:clamp(16px,3vw,40px);
+}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;overflow:hidden}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:2px solid #fad305;outline-offset:2px}
+#app{position:relative;height:100%;overflow:hidden}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+
+.top{position:absolute;left:0;right:0;top:0;padding:20px var(--gutter) 0;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;pointer-events:none}
+.top > div{min-width:0}
+.top h1{margin:6px 0 0;font-family:var(--display);font-weight:600;font-size:clamp(22px,3.4vw,38px);line-height:1.1;text-wrap:balance}
+.top p{margin:6px 0 0;font-size:clamp(13px,1.5vw,16px);color:var(--mute)}
+.live{flex:none;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.live i{width:8px;height:8px;background:var(--ink);border-radius:50%;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.hint{position:absolute;left:var(--gutter);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--mute);pointer-events:none}
+
+.dock{position:absolute;left:0;right:0;bottom:0;padding:0 var(--gutter) 20px;display:flex;flex-direction:column;gap:10px}
+.needs{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px;padding:8px 22px 8px 16px;border:0;background:var(--ink);color:var(--ground);cursor:pointer;text-align:left;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 27.7px,100% 100%,0 100%);transition:opacity .15s}
+.needs:hover{opacity:.88}
+.needs.quiet{background:transparent;color:var(--mute);border:1px solid var(--line);clip-path:none}
+.needs b{font-weight:800;font-size:clamp(15px,1.8vw,19px)}
+.needs .gate{flex:none;font-family:var(--mono);font-size:13px;font-weight:700;padding:3px 7px;background:var(--ground);color:var(--ink);margin-right:12px}
+.needs .tag{flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.needs span.what{display:flex;align-items:center;min-width:0}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:1 0 118px;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);background:rgba(22,22,22,.78);cursor:pointer;text-align:left;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--raise)}
+.chip strong{font-size:18px;font-weight:800;white-space:nowrap}
+.chip small{font-size:12px;color:var(--mute);white-space:nowrap}
+
+.panel{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;background:rgba(22,22,22,.95);border:1px solid var(--line);min-width:0}
+.panel-bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:flex;align-items:center;gap:7px;min-height:40px;padding:0 9px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--mute);cursor:pointer;font-family:var(--mono);font-size:13px;font-weight:600}
+.tab:hover{color:var(--ink)}
+.tab[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab i{width:11px;height:11px;border-radius:50%;border:2px solid var(--c);box-sizing:border-box}
+.tab i.on{background:var(--c)}
+.close{flex:none;min-height:40px;padding:0 14px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:14px;font-weight:700}
+.close:hover{border-color:var(--ink)}
+.panel-head{display:flex;gap:14px;align-items:flex-start}
+.panel-head i{flex:none;width:22px;height:22px;margin-top:8px;border-radius:50%;border:3px solid var(--c);box-sizing:border-box}
+.panel-head i.on{background:var(--c)}
+.panel-head h2{margin:2px 0 0;font-family:var(--display);font-weight:600;font-size:clamp(24px,3vw,34px);line-height:1.1}
+.panel-head .state{margin-top:4px;font-size:15px;font-weight:800}
+.rows{flex:1;min-height:0;overflow:auto;padding-right:4px}
+.rows h3{margin:18px 0 0;padding-bottom:8px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.rows h3:first-child{margin-top:0}
+.row{display:flex;align-items:baseline;gap:14px;padding:9px 0;border-bottom:1px solid var(--faint)}
+.row .k{flex:none;width:84px;font-family:var(--mono);font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.row .v{flex:1;min-width:0;font-size:15px;overflow-wrap:anywhere}
+.row .v small{display:block;font-size:13px;color:var(--mute)}
+.row .m{flex:none;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.row a.m{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.row.now .v{font-weight:800}
+.idle .live i{animation:none;opacity:.35}
+
+.tip{position:absolute;z-index:5;max-width:260px;padding:10px 12px;background:var(--ink);color:var(--ground);font-size:13px;line-height:1.4;pointer-events:none}
+.tip b{display:block;font-weight:800}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media (prefers-reduced-motion: reduce){.live i{animation:none}.needs,.chip{transition:none}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <canvas id="stage" aria-label="Rede de agentes do Orquestrador. Arraste os nós, role para aproximar e clique para abrir os detalhes."></canvas>
+
+  <div class="top">
+    <div>
+      <div class="label">ORQUESTRADOR · Network</div>
+      <h1 id="pTitle"></h1>
+      <p id="pLine"></p>
+    </div>
+    <div class="live"><i></i><span id="clock"></span></div>
+  </div>
+
+  <div class="hint" id="hint">arraste os nós · role para aproximar · clique para abrir · dados de demonstração</div>
+
+  <aside class="panel" id="panel" hidden aria-live="polite">
+    <div class="panel-bar">
+      <div class="tabs" id="tabs"></div>
+      <button type="button" class="close" id="close">Fechar</button>
+    </div>
+    <div class="panel-head">
+      <i id="pDot"></i>
+      <div>
+        <div class="label" id="pKicker"></div>
+        <h2 id="pName"></h2>
+        <div class="state" id="pState"></div>
+      </div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </aside>
+
+  <div class="dock" id="dock">
+    <button type="button" class="needs" id="needs"></button>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <nav class="sr" aria-label="Agentes" id="srnav"></nav>
+  <div class="tip" id="tip" hidden></div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/* ---------- State. DEMO is the built-in example. The real data arrives in estado.js, a file beside this
+   page that sets window.ORQUESTRADOR_STATE with the same shape; the page reloads it every two seconds. ---------- */
+var COLORS = { writer: '#e6464b', form: '#d4702f', stock: '#fad305', code: '#3fae3d', visual: '#5b96cf', delivery: '#7471f2', skill: '#c936f6' };
+var DEMO = {
+  clock: '14:33',
+  session: 'ativa',
+  project: { title: 'Casa Aurora · sofá Aria', line: 'Plano de geração · próximo portão: P4 orçamento · entrega em 14/10, 7 dias úteis', client: 'Casa Aurora', clientTip: ['1 pendência com o cliente', 'Fotos do sofá em alta resolução, pedido em 02/10'] },
+  needs: { gate: 'P4', text: 'Aprovar o plano e o orçamento de geração', count: 1, agent: 'code' },
+  messages: [{ from: 'stock', to: 'code', time: '14:32', text: 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.' }],
+  agents: [
+    { id: 'writer', role: 'ideia, conceito, roteiro e decupagem', state: 'entregue', label: 'entregue', headline: 'Entregou às 11:20',
+      tip: ['Entregou às 11:20', 'roteiro_v02.md'], files: ['conceitos_v01.md', 'roteiro_v01.md', 'roteiro_v02.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'aurora-03', 'Roteiro e decupagem v2'], ['Objetivo', 'Reescrever o roteiro com o ajuste de tom pedido no P2'],
+        ['Entradas', '00_Briefing/briefing.md', '01_Roteiro/roteiro_v01.md e a observação do P2'], ['Entrega', '01_Roteiro/roteiro_v02.md', '01_Roteiro/decupagem_v02.md', 'abrir'],
+        ['h', 'Atividade'], ['11:02', 'Leu briefing.md'], ['11:05', 'Leu roteiro_v01.md'], ['11:14', 'Escreveu roteiro_v02.md'], ['11:19', 'Escreveu decupagem_v02.md'],
+        ['11:20', 'Entregou', 'Tom mais direto, 9 cenas, CTA mantido. Sem pendências.', 'custo 0'],
+        ['h', 'Entregas neste projeto'], ['30/09', 'conceitos_v01.md', '', 'abrir'], ['01/10', 'roteiro_v01.md', '', 'abrir'], ['hoje', 'roteiro_v02.md', '', 'abrir']] },
+    { id: 'form', role: 'direção de campanha, marca e direitos', state: 'entregue', label: 'entregue', headline: 'Entregou às 13:58',
+      tip: ['Entregou às 13:58', 'direcao-campanha_v01.md'], files: ['direcao-campanha_v01.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'aurora-04', 'Direção de campanha v1'], ['Objetivo', 'Definir as regras visuais que todos seguem'],
+        ['Entrega', '02_Direcao/direcao-campanha_v01.md', 'Aprovada por você no P3, às 14:12', 'abrir'],
+        ['h', 'Atividade'], ['13:31', 'Leu briefing.md e conceitos_v01.md'], ['13:40', 'Leu o manual de marca do cliente'], ['13:57', 'Escreveu direcao-campanha_v01.md'],
+        ['13:58', 'Entregou', 'Paleta, luz, enquadramentos e o que evitar. Sem pendências.', 'custo 0']] },
+    { id: 'stock', role: 'biblioteca, inventário e assets base', state: 'trabalhando', label: 'trabalhando', headline: 'Trabalhando desde 14:28',
+      tip: ['Trabalhando desde 14:28', 'Inventário e lista de assets', 'Agora: escrevendo inventario.md'], files: [],
+      rows: [['h', 'Ordem de serviço em curso'], ['OS', 'aurora-06', 'Inventário e lista de assets'], ['Objetivo', 'Listar o que existe, o que gerar e o que licenciar'],
+        ['Entradas', '01_Roteiro/decupagem_v02.md', '02_Direcao/direcao-campanha_v01.md'], ['Entrega', '03_Assets/inventario.md'], ['Limites', 'Sem gasto nesta etapa'],
+        ['h', 'Atividade ao vivo'], ['14:28', 'Começou'], ['14:29', 'Leu decupagem_v02.md'], ['14:30', 'Listou 03_Assets/cliente/original', '14 arquivos'],
+        ['14:32', 'Deixou um recado para code no mural', 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.'],
+        ['14:33', 'Escrevendo inventario.md', '', 'agora']] },
+    { id: 'code', role: 'prompts de geração, pipeline e corte técnico', state: 'espera', label: 'espera você · P4', headline: 'Espera a sua decisão no P4',
+      tip: ['Espera a sua decisão no P4', 'plano-geracao_v01.md, entregue às 14:30'], files: ['plano-geracao_v01.md'],
+      rows: [['h', 'Espera você'], ['P4', 'Aprovar o plano e o orçamento de geração', '12 cenas · 30 gerações previstas · faixa de US$ 40 a 60', 'abrir'],
+        ['h', 'Última ordem de serviço'], ['OS', 'aurora-05', 'Plano de geração v1'], ['Objetivo', 'Prompts por cena, ferramenta, modelo e custo estimado'],
+        ['Entrega', '04_Producao/plano-geracao_v01.md', '', 'abrir'],
+        ['h', 'Atividade'], ['14:14', 'Leu decupagem_v02.md e direcao-campanha_v01.md'], ['14:29', 'Escreveu plano-geracao_v01.md'],
+        ['14:30', 'Entregou', '12 cenas, margem de refação de 25%. Pendência: fotos em alta do sofá.', 'custo 0'],
+        ['h', 'Recados'], ['14:32', 'De stock', 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.'],
+        ['h', 'A seguir'], ['tarefa 7', 'Fichas de geração (modo manual)', 'Começa depois do P4']] },
+    { id: 'visual', role: 'revisão de qualidade, estética e impacto', state: 'livre', label: 'livre', headline: 'Livre',
+      tip: ['Livre', 'Próxima tarefa: revisão do corte técnico'], files: [],
+      rows: [['h', 'A seguir'], ['tarefa 9', 'Revisão do corte técnico', 'Começa quando code entregar o corte'], ['h', 'Entregas neste projeto'], ['—', 'Nenhuma ainda']] },
+    { id: 'delivery', role: 'pacote final, nomes e conferência', state: 'livre', label: 'livre', headline: 'Livre',
+      tip: ['Livre', 'Próxima tarefa: pacote de entrega'], files: [],
+      rows: [['h', 'A seguir'], ['tarefa 10', 'Pacote de entrega', 'Começa depois do acabamento fino'], ['h', 'Entregas neste projeto'], ['—', 'Nenhuma ainda']] },
+    { id: 'skill', role: 'Academia: cursos, treino e retrospectiva', state: 'livre', label: 'livre', headline: 'Livre',
+      tip: ['Livre · Academia', '1 curso aberto: code · higgsfield-api'], files: [], courses: [{ name: 'higgsfield-api', student: 'code' }],
+      rows: [['h', 'Cursos abertos'], ['01/10', 'code · higgsfield-api', 'Espera a API da ferramenta de geração'], ['h', 'A seguir'], ['tarefa 11', 'Retrospectiva do projeto', 'Depois da entrega'],
+        ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Todos os agentes']] }
+  ],
+  panels: {
+    needs: { kicker: 'Needs you', title: 'O que espera você', state: '1 decisão sua · 1 pendência com o cliente', chip: null,
+      rows: [['h', 'Decisões suas'], ['P4', 'Aprovar o plano e o orçamento de geração', '12 cenas · 30 gerações previstas · faixa de US$ 40 a 60', 'abrir'],
+        ['arquivo', '04_Producao/plano-geracao_v01.md', 'Entregue por code às 14:30'], ['h', 'Com o cliente'], ['02/10', 'Fotos do sofá em alta resolução', 'Pedido feito, sem resposta ainda']] },
+    gates: { kicker: 'Gates', title: 'Portões', state: '4 de 7 aprovados', chip: ['Gates', '4 de 7', 'atual: P4'], tip: ['Portão atual: P4 orçamento', 'P3 direção aprovado hoje às 14:12'],
+      rows: [['P0', 'Viabilidade e plano', 'Aprovado em 28/09', 'aprovado'], ['P1', 'Conceito', 'Aprovado em 30/09', 'aprovado'], ['P2', 'Roteiro e decupagem', 'Ajustes em 01/10, aprovado hoje às 11:26', 'aprovado'],
+        ['P3', 'Direção de campanha', 'Aprovado hoje às 14:12', 'aprovado'], ['P4', 'Plano e orçamento de geração', 'O plano está pronto e espera a sua decisão', 'espera você'],
+        ['P5', 'Corte revisado', '', 'a seguir'], ['P6', 'Pacote de entrega', '', 'a seguir']] },
+    tasks: { kicker: 'Tasks', title: 'Tarefas', state: '5 de 11 entregues', chip: ['Tasks', '5 de 11', 'stock em andamento'], tip: ['Em andamento', 'stock · Inventário e lista de assets', 'A seguir: code · Fichas de geração'],
+      rows: [['writer', 'Conceitos v1', '', 'entregue'], ['writer', 'Roteiro e decupagem v1', '', 'entregue'], ['writer', 'Roteiro e decupagem v2', '', 'entregue'], ['form', 'Direção de campanha v1', '', 'entregue'],
+        ['code', 'Plano de geração v1', '', 'entregue'], ['stock', 'Inventário e lista de assets', 'Desde 14:28', 'em andamento'], ['code', 'Fichas de geração (modo manual)', '', 'a fazer'],
+        ['code', 'Corte técnico e timeline XML', '', 'a fazer'], ['visual', 'Revisão do corte técnico', '', 'a fazer'], ['delivery', 'Pacote de entrega', '', 'a fazer'], ['skill', 'Retrospectiva', '', 'a fazer']] },
+    log: { kicker: 'Log', title: 'Registro', state: 'Hoje', chip: ['Log', '14:32', 'recado de stock'], tip: ['14:32 stock deixou um recado para code', '14:30 code entregou o plano de geração', '14:12 José aprovou o P3'],
+      rows: [['14:32', 'stock deixou um recado para code no mural'], ['14:30', 'code entregou o plano de geração'], ['14:28', 'stock começou o inventário'], ['14:14', 'code começou o plano de geração'],
+        ['14:12', 'José aprovou o P3'], ['13:58', 'form entregou a direção de campanha'], ['13:31', 'form começou a direção de campanha'], ['11:26', 'José aprovou o P2'], ['11:20', 'writer entregou o roteiro v2'], ['11:02', 'writer começou o roteiro v2']] },
+    budget: { kicker: 'Budget', title: 'Orçamento de geração', state: 'A aprovar no P4', chip: ['Budget', 'a aprovar', 'no P4'], tip: ['Faixa prevista: US$ 40 a 60', '12 cenas, 30 gerações. Gasto até agora: US$ 0'],
+      rows: [['faixa', 'US$ 40 a 60', '12 cenas · 30 gerações previstas · margem de refação de 25%'], ['aprovado', 'Ainda não', 'Você decide no P4'], ['gasto', 'US$ 0'], ['modo', 'Manual', 'Você gera na plataforma a partir das fichas, até a API estar configurada']] },
+    academy: { kicker: 'Academy', title: 'Academia', state: '1 curso aberto', chip: ['Academy', '1 curso', 'code'], tip: ['code · higgsfield-api', 'Aberto em 01/10. Espera a API da ferramenta de geração'],
+      rows: [['h', 'Cursos abertos'], ['01/10', 'code · higgsfield-api', 'Espera a API da ferramenta de geração'], ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Padrões de trabalho, mural, caderno e retorno']] }
+  }
+};
+var STATE = null, isDemo = true, lastJson = '';
+function normalize(st) {
+  st = st || {};
+  st.project = st.project || { title: 'Nenhum projeto ativo', line: 'Comece com /novo-projeto no Claude Code', client: '' };
+  st.needs = st.needs || { count: 0 };
+  st.messages = (st.messages || []).slice(-3);
+  st.agents = (st.agents || []).filter(function (a) { return a && COLORS[a.id]; });
+  st.panels = st.panels || {};
+  return st;
+}
+
+/* ---------- Elements ---------- */
+var $ = function (id) { return document.getElementById(id); };
+var app = $('app'), canvas = $('stage'), ctx = canvas.getContext('2d');
+var topEl = app.querySelector('.top'), dock = $('dock'), panel = $('panel'), tip = $('tip'), hint = $('hint');
+var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var INK = '#f4f3f2', GROUND = '#161616';
+var ANGLES = { writer: 210, form: 170, stock: 130, code: 90, visual: 50, delivery: 10, skill: -30 };
+
+/* ---------- Graph model: rebuilt whenever the state changes; nodes keep their place ---------- */
+var nodes = [], links = [], byId = {}, neighbors = {};
+function buildGraph() {
+  var old = byId; nodes = []; links = []; byId = {}; neighbors = {};
+  function addNode(n) { var o = old[n.id]; n.x = o ? o.x : 0; n.y = o ? o.y : 0; n.vx = 0; n.vy = 0; n.ax = 0; n.ay = 0; n.phase = o ? o.phase : Math.random() * 6.28; n.placed = !!o; nodes.push(n); byId[n.id] = n; return n; }
+  function addLink(a, b, kind, color, curve) { if (!byId[a] || !byId[b]) { return; } links.push({ a: byId[a], b: byId[b], kind: kind, color: color, curve: curve !== undefined ? curve : (links.length % 2 ? 1 : -1) * 0.07, parts: [] }); }
+  var needs = STATE.needs, client = STATE.project.client;
+  addNode({ id: 'claude', type: 'core' });
+  addNode({ id: 'jose', type: 'jose', open: 'needs', tip: needs.count ? [needs.count + (needs.count > 1 ? ' decisões esperam você' : ' decisão espera você'), needs.gate + ' · ' + needs.text] : ['José', 'Nada pendente'] });
+  addNode({ id: 'client', type: 'client', open: 'needs', tip: STATE.project.clientTip || ['Cliente' + (client ? ' · ' + client : ''), 'Nenhuma pendência'] });
+  addLink('jose', 'claude', 'jose', INK);
+  addLink('client', 'jose', 'client', INK);
+  STATE.agents.forEach(function (a) {
+    var files = (a.files || []).slice(-5), courses = a.courses || [];
+    addNode({ id: a.id, type: 'agent', agent: a, color: COLORS[a.id], open: a.id, tip: a.tip || [a.headline || a.id] });
+    addLink('claude', a.id, 'agent', COLORS[a.id]);
+    files.forEach(function (f, i) {
+      addNode({ id: 'f:' + a.id + ':' + f, type: 'file', parent: a.id, name: f, idx: i, count: files.length, color: COLORS[a.id], open: a.id, tip: [f, 'Entrega de ' + a.id] });
+      addLink(a.id, 'f:' + a.id + ':' + f, 'file', COLORS[a.id]);
+    });
+    courses.forEach(function (c, i) {
+      addNode({ id: 'c:' + c.name, type: 'file', course: true, parent: a.id, name: c.name, idx: i, count: courses.length, color: COLORS[a.id], open: 'academy', tip: ['Curso aberto: ' + c.name, 'Aluno: ' + c.student] });
+      addLink(a.id, 'c:' + c.name, 'file', COLORS[a.id]);
+    });
+  });
+  STATE.agents.forEach(function (a) { (a.courses || []).forEach(function (c) { addLink('c:' + c.name, c.student, 'course', COLORS[a.id], 0.16); }); });
+  STATE.messages.forEach(function (m) { addLink(m.from, m.to, 'msg', INK, -0.18); });
+  nodes.forEach(function (n) { neighbors[n.id] = {}; });
+  links.forEach(function (l) { neighbors[l.a.id][l.b.id] = true; neighbors[l.b.id][l.a.id] = true; });
+  links.forEach(function (l) {               // particles: direction and count say what is happening
+    var st = l.kind === 'agent' ? l.b.agent.state : '';
+    var n = 0, speed = 0, dir = 1;
+    if (l.kind === 'agent' && st === 'trabalhando') { n = 5; speed = 0.34; }
+    if (l.kind === 'agent' && st === 'entregue') { n = 1; speed = 0.1; dir = -1; }
+    if (l.kind === 'agent' && st === 'espera') { n = 2; speed = 0.16; dir = -1; }
+    if (l.kind === 'jose' && needs.count) { n = 2; speed = 0.2; dir = -1; }
+    if (l.kind === 'msg') { n = 1; speed = 0.22; }
+    for (var i = 0; i < n; i++) { l.parts.push({ t: i / n, speed: speed, dir: dir }); }
+  });
+  hover = hover ? byId[hover.id] || null : null; drag = null;
+}
+var cloud = [];
+var SPECTRUM = ['writer', 'form', 'stock', 'code', 'visual', 'delivery', 'skill'].map(function (id) { return COLORS[id]; });
+for (var ci = 0; ci < 90; ci++) { cloud.push({ a: Math.random() * 6.28, r: Math.sqrt(Math.random()), s: (0.2 + Math.random() * 0.6) * (Math.random() < 0.5 ? -1 : 1), c: SPECTRUM[ci % SPECTRUM.length] }); }
+
+/* ---------- Layout: where each node rests, from the free area of the screen ---------- */
+var W = 0, H = 0, dpr = 1, area = { x: 0, y: 0, w: 1, h: 1 }, areaT = null, geo = { cx: 0, cy: 0, rx: 100, ry: 100, s: 1 };
+var view = { k: 1, tx: 0, ty: 0 };
+var open = null;      // id of the open panel: an agent id or a panel key
+var hover = null, drag = null, pan = null, cursor = null, moved = 0;
+
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function measure() {
+  var r = app.getBoundingClientRect();
+  W = r.width; H = r.height; dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+  var topH = topEl.getBoundingClientRect().height + 6;
+  var dockH = dock.getBoundingClientRect().height + 6;
+  var availH = Math.max(120, H - topH - dockH);
+  var a = { x: 0, y: topH, w: W, h: availH };
+  if (open) {
+    var landscape = W >= 900 && W > H * 1.05;
+    if (landscape) {
+      var pw = Math.min(460, Math.round(W * 0.42));
+      panel.style.cssText = 'left:auto;right:' + 16 + 'px;top:' + topH + 'px;width:' + pw + 'px;height:' + (availH - 8) + 'px';
+      a.w = W - pw - 24;
+    } else {
+      var small = H < 900;
+      var ph = small ? availH - 4 : Math.round(availH * 0.5);
+      panel.style.cssText = 'left:16px;right:16px;top:' + (H - dockH - ph) + 'px;height:' + ph + 'px';
+      if (!small) { a.h = availH - ph - 8; }
+    }
+  }
+  hint.style.bottom = (dockH + 4) + 'px';
+  hint.hidden = !!open || W < 560;
+  areaT = a;
+  if (!area || area.w === 1) { area = { x: a.x, y: a.y, w: a.w, h: a.h }; }
+}
+function anchors() {
+  var rx = clamp(Math.min(470, (area.w / 2 - 84) / 0.985), 90, 470);
+  var ry = clamp((area.h - 176) / 2, 70, 640);
+  ry = Math.min(ry, rx * 1.4); rx = Math.min(rx, ry * 1.7);
+  var s = clamp(Math.min(rx, ry) / 340, 0.6, 1.3);
+  var cx = area.x + area.w / 2;
+  var cy = area.y + (area.h - (2 * ry + 176)) / 2 + ry + 106;
+  geo = { cx: cx, cy: cy, rx: rx, ry: ry, s: s };
+  nodes.forEach(function (n) {
+    if (n.type === 'core') { n.ax = cx; n.ay = cy; n.r = 44 * s; }
+    else if (n.type === 'jose') { n.ax = cx; n.ay = cy - ry - 20; n.r = 22 * s; n.w = 92 * s; n.h = 32 * s; }
+    else if (n.type === 'client') { n.ax = cx; n.ay = cy - ry - 20 - 58 * s; n.r = 16 * s; n.w = Math.max(150, 170 * s); n.h = 26 * s; }
+    else if (n.type === 'agent') { var t = ANGLES[n.id] * Math.PI / 180; n.ax = cx + Math.cos(t) * rx; n.ay = cy + Math.sin(t) * ry; n.r = 15 * s + 2; }
+  });
+  nodes.forEach(function (n) {
+    if (n.type !== 'file') { return; }
+    var p = byId[n.parent];
+    var dx = p.ax - cx, dy = p.ay - cy, d = Math.hypot(dx, dy) || 1, base = Math.atan2(dy, dx);
+    if (dy / d > 0.5) { base += (dx < -1 ? 1 : -1) * 0.95; }     // keep the label below the node clear
+    if (dy / d < -0.3) { base += (dx < 0 ? -1 : 1) * 0.5; }       // upper nodes: fan up and outward
+    var t = base + (n.idx - (n.count - 1) / 2) * 0.5;
+    var dist = (52 + (n.idx % 2) * 14) * s + p.r;
+    n.ax = p.ax + Math.cos(t) * dist; n.ay = p.ay + Math.sin(t) * dist; n.r = 4;
+  });
+  nodes.forEach(function (n) { if (!n.placed) { n.x = cx + (n.ax - cx) * 0.2; n.y = cy + (n.ay - cy) * 0.2; n.placed = true; } });
+}
+function toWorld(sx, sy) { return { x: (sx - geo.cx - view.tx) / view.k + geo.cx, y: (sy - geo.cy - view.ty) / view.k + geo.cy }; }
+function toScreen(x, y) { return { x: (x - geo.cx) * view.k + geo.cx + view.tx, y: (y - geo.cy) * view.k + geo.cy + view.ty }; }
+
+/* ---------- Physics: every node is on a spring to its resting place, and reacts to the pointer ---------- */
+function step(dt, time) {
+  if (areaT) { ['x', 'y', 'w', 'h'].forEach(function (k) { area[k] += (areaT[k] - area[k]) * 0.14; }); }
+  anchors();
+  var dragOff = drag ? { x: drag.x - drag.ax, y: drag.y - drag.ay } : null;
+  nodes.forEach(function (n) {
+    if (n === drag) { return; }
+    var tx = n.ax, ty = n.ay;
+    if (!reduced) { tx += Math.sin(time * 0.5 + n.phase) * 3 * geo.s; ty += Math.cos(time * 0.4 + n.phase * 1.7) * 3 * geo.s; }
+    if (dragOff) {                                         // neighbours of a dragged node follow part of the way
+      var f = neighbors[drag.id][n.id] ? (n.type === 'file' || drag.type === 'core' ? 0.75 : 0.28) : 0.07;
+      if (n.type === 'file' && byId[n.parent] !== drag && neighbors[drag.id][n.parent]) { f = 0.28; }
+      tx += dragOff.x * f; ty += dragOff.y * f;
+    }
+    if (hover && hover !== n && neighbors[hover.id][n.id] && !drag) { tx += (hover.x - n.x) * 0.01; ty += (hover.y - n.y) * 0.01; }
+    var k = n.type === 'core' ? 0.09 : 0.05;
+    var fx = (tx - n.x) * k, fy = (ty - n.y) * k;
+    if (cursor && !drag && !reduced) {                     // the pointer is a soft magnet
+      var dx = cursor.x - n.x, dy = cursor.y - n.y, d = Math.hypot(dx, dy);
+      if (d < 80 && d > 1) { var m = (1 - d / 80) * 0.03; fx += dx / d * m; fy += dy / d * m; }
+    }
+    n.vx = (n.vx + fx) * 0.78; n.vy = (n.vy + fy) * 0.78;
+    n.x += n.vx; n.y += n.vy;
+  });
+  for (var i = 0; i < nodes.length; i++) {                 // keep nodes from sitting on each other
+    for (var j = i + 1; j < nodes.length; j++) {
+      var a = nodes[i], b = nodes[j], ddx = b.x - a.x, ddy = b.y - a.y, dd = Math.hypot(ddx, ddy) || 0.01, min = a.r + b.r + 14;
+      if (dd < min) { var push = (min - dd) / 2; ddx /= dd; ddy /= dd; if (a !== drag) { a.x -= ddx * push; a.y -= ddy * push; } if (b !== drag) { b.x += ddx * push; b.y += ddy * push; } }
+    }
+  }
+  if (!reduced) { links.forEach(function (l) { l.parts.forEach(function (p) { p.t = (p.t + p.speed * dt) % 1; }); }); }
+}
+
+/* ---------- Drawing ---------- */
+function rgba(hex, a) { var v = parseInt(hex.slice(1), 16); return 'rgba(' + (v >> 16) + ',' + ((v >> 8) & 255) + ',' + (v & 255) + ',' + a + ')'; }
+function ctrl(l) { var mx = (l.a.x + l.b.x) / 2, my = (l.a.y + l.b.y) / 2, dx = l.b.x - l.a.x, dy = l.b.y - l.a.y; return { x: mx - dy * l.curve, y: my + dx * l.curve }; }
+function along(l, c, t) { var u = 1 - t; return { x: u * u * l.a.x + 2 * u * t * c.x + t * t * l.b.x, y: u * u * l.a.y + 2 * u * t * c.y + t * t * l.b.y }; }
+function focusOf() { return hover || (open && byId[open]) || null; }
+function lit(n, f) { return !f || n === f || neighbors[f.id][n.id]; }
+
+function draw(time) {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  var g = ctx.createRadialGradient(geo.cx + view.tx, geo.cy + view.ty, 0, geo.cx + view.tx, geo.cy + view.ty, Math.max(W, H) * 0.7);
+  g.addColorStop(0, '#20211f'); g.addColorStop(0.5, '#181818'); g.addColorStop(1, '#131313');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  ctx.setTransform(dpr * view.k, 0, 0, dpr * view.k, dpr * (geo.cx - geo.cx * view.k + view.tx), dpr * (geo.cy - geo.cy * view.k + view.ty));
+  var f = focusOf(), s = geo.s;
+
+  // backdrop: dot grid and two orbits with tick marks
+  ctx.fillStyle = 'rgba(244,243,242,0.07)';
+  var step0 = 44, x0 = Math.floor((geo.cx - geo.rx * 2) / step0) * step0, y0 = Math.floor((geo.cy - geo.ry * 2) / step0) * step0;
+  for (var gx = x0; gx < geo.cx + geo.rx * 2; gx += step0) { for (var gy = y0; gy < geo.cy + geo.ry * 2; gy += step0) { ctx.fillRect(gx, gy, 1.2, 1.2); } }
+  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(244,243,242,0.09)';
+  ctx.beginPath(); ctx.ellipse(geo.cx, geo.cy, geo.rx, geo.ry, 0, 0, 6.2832); ctx.stroke();
+  ctx.setLineDash([2, 10]); ctx.lineDashOffset = reduced ? 0 : -time * 6;
+  ctx.beginPath(); ctx.ellipse(geo.cx, geo.cy, geo.rx * 0.52, geo.ry * 0.52, 0, 0, 6.2832); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // links
+  links.forEach(function (l) {
+    var c = ctrl(l), on = !f || (lit(l.a, f) && lit(l.b, f) && (l.a === f || l.b === f)), st = l.kind === 'agent' ? l.b.agent.state : '';
+    var alpha = 0.3, width = 1;
+    if (l.kind === 'agent') { alpha = st === 'livre' ? 0.28 : st === 'trabalhando' ? 0.95 : 0.7; width = st === 'livre' ? 1 : st === 'trabalhando' ? 2 : 1.5; }
+    if (l.kind === 'jose') { alpha = 0.8; width = 1.5; }
+    if (l.kind === 'client') { alpha = 0.4; }
+    if (l.kind === 'file') { alpha = 0.4; }
+    if (l.kind === 'course') { alpha = 0.3; }
+    if (l.kind === 'msg') { alpha = 0.6; }
+    if (f && !on) { alpha *= 0.25; } else if (f) { alpha = Math.min(1, alpha + 0.25); }
+    ctx.strokeStyle = rgba(l.color, alpha); ctx.lineWidth = width;
+    if (l.kind === 'client' || l.kind === 'msg' || l.kind === 'course' || st === 'bloqueado') { ctx.setLineDash([2, 6]); }
+    ctx.shadowColor = l.color; ctx.shadowBlur = l.kind === 'agent' && st !== 'livre' ? 8 : 0;
+    ctx.beginPath(); ctx.moveTo(l.a.x, l.a.y); ctx.quadraticCurveTo(c.x, c.y, l.b.x, l.b.y); ctx.stroke();
+    ctx.setLineDash([]); ctx.shadowBlur = 0;
+    if (reduced) { return; }
+    l.parts.forEach(function (p) {
+      var t = p.dir > 0 ? p.t : 1 - p.t, q = along(l, c, t), fade = Math.sin(p.t * Math.PI);
+      ctx.fillStyle = rgba(l.kind === 'msg' || l.kind === 'jose' ? INK : l.color, (f && !on ? 0.2 : 1) * fade);
+      ctx.shadowColor = l.color; ctx.shadowBlur = 10;
+      if (l.kind === 'msg') { ctx.fillRect(q.x - 3, q.y - 3, 6, 6); } else { ctx.beginPath(); ctx.arc(q.x, q.y, 2.2, 0, 6.2832); ctx.fill(); }
+      ctx.shadowBlur = 0;
+    });
+  });
+
+  // nodes
+  nodes.forEach(function (n) {
+    var a = lit(n, f) ? 1 : 0.28;
+    ctx.globalAlpha = a;
+    if (n.type === 'core') { drawCore(n, time); }
+    else if (n.type === 'jose') { drawJose(n, time); }
+    else if (n.type === 'client') { drawClient(n); }
+    else if (n.type === 'agent') { drawAgent(n, time, f); }
+    else { drawFile(n, f); }
+    ctx.globalAlpha = 1;
+  });
+}
+function drawCore(n, time) {
+  var r = n.r;
+  ctx.shadowColor = INK; ctx.shadowBlur = 26;
+  ctx.strokeStyle = 'rgba(244,243,242,0.55)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(244,243,242,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([10, 14]); ctx.lineDashOffset = reduced ? 0 : -time * 9;
+  ctx.beginPath(); ctx.arc(n.x, n.y, r + 9, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  cloud.forEach(function (p) {
+    var a = p.a + (reduced ? 0 : time * p.s), rr = p.r * r * 0.86;
+    ctx.fillStyle = rgba(p.c, 0.9); ctx.fillRect(n.x + Math.cos(a) * rr - 0.8, n.y + Math.sin(a) * rr * 0.92 - 0.8, 1.7, 1.7);
+  });
+  ctx.restore();
+  var tr = r * 0.6;                                         // the prism, apex up
+  ctx.beginPath(); ctx.moveTo(n.x, n.y - tr); ctx.lineTo(n.x - tr * 0.866, n.y + tr * 0.5); ctx.lineTo(n.x + tr * 0.866, n.y + tr * 0.5); ctx.closePath();
+  ctx.fillStyle = 'rgba(22,22,22,0.55)'; ctx.fill();
+  ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.shadowColor = INK; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(244,243,242,0.8)'; ctx.font = '600 ' + Math.round(11 * geo.s + 1) + "px 'JetBrains Mono', monospace"; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  ctx.fillText('CLAUDE', n.x - (r + 16) * 0.5, n.y - (r + 16) * 0.866);
+}
+function drawJose(n, time) {
+  var w = n.w, h = n.h, x = n.x - w / 2, y = n.y - h / 2, ch = 9 * geo.s;
+  var wait = STATE.needs.count > 0;
+  if (wait) {
+    ctx.strokeStyle = rgba(INK, reduced ? 0.6 : 0.25 + 0.5 * (0.5 + 0.5 * Math.sin(time * 3.2))); ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x - 7, y - 7); ctx.lineTo(x + w - ch + 3, y - 7); ctx.lineTo(x + w + 7, y + ch * 1.732 - 3); ctx.lineTo(x + w + 7, y + h + 7); ctx.lineTo(x - 7, y + h + 7); ctx.closePath(); ctx.stroke();
+  }
+  ctx.fillStyle = INK; ctx.shadowColor = INK; ctx.shadowBlur = 16;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w - ch, y); ctx.lineTo(x + w, y + ch * 1.732); ctx.lineTo(x + w, y + h); ctx.lineTo(x, y + h); ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+  ctx.fillStyle = GROUND; ctx.font = '700 ' + Math.round(13 * geo.s + 1) + "px 'JetBrains Mono', monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('JOSÉ', n.x - 2, n.y + 1);
+  if (wait) {
+    ctx.fillStyle = INK; ctx.font = '800 ' + Math.round(12 * geo.s + 2) + "px 'Mulish', sans-serif"; ctx.textAlign = 'left';
+    ctx.fillText((STATE.needs.gate ? STATE.needs.gate + ' ' : '') + 'espera você', x + w + 16, n.y + 1);
+  }
+}
+function drawClient(n) {
+  var w = n.w, h = n.h;
+  ctx.strokeStyle = 'rgba(244,243,242,0.5)'; ctx.lineWidth = 1; ctx.fillStyle = 'rgba(22,22,22,0.8)';
+  ctx.fillRect(n.x - w / 2, n.y - h / 2, w, h); ctx.strokeRect(n.x - w / 2, n.y - h / 2, w, h);
+  ctx.fillStyle = INK; ctx.font = "600 11px 'JetBrains Mono', monospace"; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('CLIENT' + (STATE.project.client ? ' · ' + STATE.project.client : ''), n.x, n.y + 1);
+}
+function drawAgent(n, time, f) {
+  var st = n.agent.state, r = n.r, c = n.color, active = st === 'trabalhando' || st === 'espera' || st === 'bloqueado';
+  ctx.fillStyle = GROUND; ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.fill();
+  ctx.shadowColor = c; ctx.shadowBlur = st === 'livre' ? 6 : 20;
+  ctx.strokeStyle = st === 'bloqueado' ? INK : rgba(c, st === 'livre' ? 0.75 : 1); ctx.lineWidth = st === 'livre' ? 1.5 : 2.5;
+  if (st === 'bloqueado') { ctx.setLineDash([3, 5]); }
+  ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+  if (st === 'entregue' || st === 'espera') { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(n.x, n.y, r * 0.52, 0, 6.2832); ctx.fill(); }
+  if (st === 'trabalhando') {
+    var pulse = reduced ? 0.5 : 0.5 + 0.5 * Math.sin(time * 4);
+    ctx.fillStyle = c; ctx.beginPath(); ctx.arc(n.x, n.y, r * (0.34 + 0.2 * pulse), 0, 6.2832); ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = c; var a0 = reduced ? 0 : time * 2.4;
+    ctx.beginPath(); ctx.arc(n.x, n.y, r + 7, a0, a0 + 1.6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(n.x, n.y, r + 7, a0 + 3.14, a0 + 4.74); ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+  if (st === 'espera') {
+    ctx.strokeStyle = rgba(INK, reduced ? 0.7 : 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(time * 3.2))); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(n.x, n.y, r + 8, 0, 6.2832); ctx.stroke();
+  }
+  if (open === n.id) {                                      // brackets around the open agent
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.5; var b = r + 15, q = 7;
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (d) {
+      ctx.beginPath(); ctx.moveTo(n.x + d[0] * b, n.y + d[1] * (b - q)); ctx.lineTo(n.x + d[0] * b, n.y + d[1] * b); ctx.lineTo(n.x + d[0] * (b - q), n.y + d[1] * b); ctx.stroke();
+    });
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = INK; ctx.font = '700 ' + Math.round(12 * geo.s + 2) + "px 'JetBrains Mono', monospace";
+  ctx.fillText(n.id, n.x, n.y + r + 20 * geo.s + 4);
+  ctx.fillStyle = active ? INK : 'rgba(244,243,242,0.68)'; ctx.font = (active ? '800 ' : '400 ') + Math.round(10 * geo.s + 2) + "px 'Mulish', sans-serif";
+  ctx.fillText(n.agent.label, n.x, n.y + r + 36 * geo.s + 5);
+}
+function drawFile(n, f) {
+  ctx.shadowColor = n.color; ctx.shadowBlur = 8;
+  if (n.course) { ctx.strokeStyle = n.color; ctx.lineWidth = 1.5; ctx.strokeRect(n.x - 4, n.y - 4, 8, 8); }
+  else { ctx.fillStyle = n.color; ctx.fillRect(n.x - 3.5, n.y - 3.5, 7, 7); }
+  ctx.shadowBlur = 0;
+  if (f && (f === n || f.id === n.parent)) {
+    var p = byId[n.parent], left = n.x < p.x;
+    ctx.fillStyle = 'rgba(244,243,242,0.9)'; ctx.font = "400 11px 'JetBrains Mono', monospace"; ctx.textAlign = left ? 'right' : 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.name, n.x + (left ? -10 : 10), n.y);
+  }
+}
+
+/* ---------- Pointer: hover, drag a node, pan the plane, zoom ---------- */
+function pick(wx, wy) {
+  var best = null, bd = 1e9;
+  nodes.forEach(function (n) {
+    var d = Math.hypot(n.x - wx, n.y - wy), reach = (n.type === 'file' ? 12 : n.r + 10);
+    if (n.type === 'jose' || n.type === 'client') { if (Math.abs(n.x - wx) < n.w / 2 + 6 && Math.abs(n.y - wy) < n.h / 2 + 6) { d = 0; reach = 1; } else { return; } }
+    if (d < reach && d < bd) { best = n; bd = d; }
+  });
+  return best;
+}
+function local(e) { var r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+function showTip(lines, sx, sy, above) {
+  tip.textContent = '';
+  lines.forEach(function (t, i) { var el = document.createElement(i === 0 ? 'b' : 'div'); el.textContent = t; tip.appendChild(el); });
+  tip.hidden = false;
+  var tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.left = clamp(sx - tw / 2, 8, W - tw - 8) + 'px';
+  tip.style.top = (above ? sy - th - 8 : (sy + th + 8 > H ? sy - th - 60 : sy)) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+canvas.addEventListener('pointermove', function (e) {
+  var p = local(e), w = toWorld(p.x, p.y);
+  cursor = w;
+  if (drag) { drag.x = w.x; drag.y = w.y; drag.vx = drag.vy = 0; moved += Math.abs(e.movementX || 0) + Math.abs(e.movementY || 0); hideTip(); return; }
+  if (pan) { view.tx = pan.tx + (p.x - pan.x); view.ty = pan.ty + (p.y - pan.y); moved += Math.abs(e.movementX || 0) + Math.abs(e.movementY || 0); return; }
+  hover = pick(w.x, w.y);
+  canvas.style.cursor = hover ? 'pointer' : 'grab';
+  if (hover && hover.tip) { var sp = toScreen(hover.x, hover.y); showTip(hover.tip.concat(hover.open ? ['Clique para abrir'] : []), sp.x, sp.y + (hover.r + 44) * view.k); } else { hideTip(); }
+});
+canvas.addEventListener('pointerdown', function (e) {
+  var p = local(e), w = toWorld(p.x, p.y), n = pick(w.x, w.y);
+  moved = 0; canvas.setPointerCapture(e.pointerId);
+  if (n) { drag = n; hover = n; } else { pan = { x: p.x, y: p.y, tx: view.tx, ty: view.ty }; canvas.style.cursor = 'grabbing'; }
+});
+function release() {
+  if (drag && moved < 6) { var n = drag; drag = null; if (n.type === 'core') { openPanel('log'); } else if (n.open) { openPanel(n.open); } }
+  drag = null; pan = null; canvas.style.cursor = hover ? 'pointer' : 'grab';
+}
+canvas.addEventListener('pointerup', release);
+canvas.addEventListener('pointercancel', release);
+canvas.addEventListener('pointerleave', function () { if (!drag && !pan) { hover = null; cursor = null; hideTip(); } });
+canvas.addEventListener('wheel', function (e) {
+  e.preventDefault();
+  var p = local(e), before = toWorld(p.x, p.y);
+  view.k = clamp(view.k * Math.exp(-e.deltaY * 0.0012), 0.6, 2.4);
+  var after = toScreen(before.x, before.y);
+  view.tx += p.x - after.x; view.ty += p.y - after.y;
+}, { passive: false });
+canvas.addEventListener('dblclick', function (e) { var p = local(e), w = toWorld(p.x, p.y); if (!pick(w.x, w.y)) { view.k = 1; view.tx = 0; view.ty = 0; } });
+
+/* ---------- Panel and dock ---------- */
+function agentOf(id) { for (var i = 0; i < STATE.agents.length; i++) { if (STATE.agents[i].id === id) { return STATE.agents[i]; } } return null; }
+function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text !== undefined) { e.textContent = text; } return e; }
+function fillRows(rows) {
+  var box = $('rows'), at = box.scrollTop; box.textContent = '';
+  rows.forEach(function (r) {
+    if (r[0] === 'h') { box.appendChild(el('h3', '', r[1])); return; }
+    var row = el('div', 'row' + (r[3] === 'agora' ? ' now' : ''));
+    row.appendChild(el('span', 'k', r[0]));
+    var v = el('span', 'v', r[1]); if (r[2]) { v.appendChild(el('small', '', r[2])); } row.appendChild(v);
+    if (r[3] && r[4] && /^(obsidian|file):/i.test(r[4])) { var ln = el('a', 'm', r[3]); ln.href = r[4]; row.appendChild(ln); }
+    else if (r[3]) { row.appendChild(el('span', 'm', r[3])); }
+    box.appendChild(row);
+  });
+  box.scrollTop = at;
+}
+function openPanel(id, keep) {
+  var a = agentOf(id), p = a ? null : STATE.panels[id];
+  if (!a && !p) { return; }
+  open = id; hideTip();
+  var dot = $('pDot');
+  if (a) {
+    dot.hidden = false; dot.style.setProperty('--c', COLORS[a.id]); dot.className = a.state === 'livre' ? '' : 'on';
+    $('pKicker').textContent = 'Agente · ' + (a.role || ''); $('pName').textContent = a.id; $('pState').textContent = a.headline || a.label || ''; fillRows(a.rows || []);
+  } else {
+    dot.hidden = true;
+    $('pKicker').textContent = p.kicker || ''; $('pName').textContent = p.title || ''; $('pState').textContent = p.state || ''; fillRows(p.rows || []);
+  }
+  panel.hidden = false;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-open') === id ? 'true' : 'false'); });
+  if (!keep) { view.k = 1; view.tx = 0; view.ty = 0; }
+  measure();
+}
+function closePanel() {
+  open = null; panel.hidden = true;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'), function (b) { b.setAttribute('aria-pressed', 'false'); });
+  measure();
+}
+$('close').addEventListener('click', closePanel);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) { closePanel(); } });
+
+function buildChrome() {
+  var tabs = $('tabs'), sr = $('srnav'), needsBtn = $('needs'), chips = $('chips');
+  tabs.textContent = ''; sr.textContent = ''; needsBtn.textContent = ''; chips.textContent = '';
+  STATE.agents.forEach(function (a) {
+    var t = el('button', 'tab'); t.type = 'button'; t.setAttribute('data-open', a.id); t.setAttribute('aria-pressed', open === a.id ? 'true' : 'false');
+    var i = el('i', a.state === 'livre' ? '' : 'on'); i.style.setProperty('--c', COLORS[a.id]); t.appendChild(i); t.appendChild(document.createTextNode(a.id));
+    t.addEventListener('click', function () { openPanel(a.id); }); tabs.appendChild(t);
+    var s = el('button', '', 'Abrir ' + a.id + ': ' + (a.headline || a.label || '')); s.type = 'button'; s.addEventListener('click', function () { openPanel(a.id); }); sr.appendChild(s);
+  });
+  if (STATE.needs.count) {
+    var what = el('span', 'what'); what.appendChild(el('span', 'gate', STATE.needs.gate || '—')); what.appendChild(el('b', '', STATE.needs.text || ''));
+    needsBtn.appendChild(what); needsBtn.appendChild(el('span', 'tag', 'Needs you · ' + STATE.needs.count));
+  } else { needsBtn.appendChild(el('b', '', 'Nada pendente')); }
+  needsBtn.classList.toggle('quiet', !STATE.needs.count);
+  ['gates', 'tasks', 'log', 'budget', 'academy'].forEach(function (key) {
+    var p = STATE.panels[key]; if (!p || !p.chip) { return; }
+    var c = el('button', 'chip'); c.type = 'button'; c.setAttribute('data-open', key); c.setAttribute('aria-pressed', open === key ? 'true' : 'false');
+    c.appendChild(el('span', 'label', p.chip[0])); c.appendChild(el('strong', '', p.chip[1])); c.appendChild(el('small', '', p.chip[2] || ''));
+    c.addEventListener('click', function () { if (open === key) { closePanel(); } else { openPanel(key); } });
+    c.addEventListener('pointerenter', function () { if (!p.tip) { return; } var r = c.getBoundingClientRect(), ar = app.getBoundingClientRect(); showTip(p.tip, r.left - ar.left + r.width / 2, r.top - ar.top, true); });
+    c.addEventListener('pointerleave', hideTip);
+    chips.appendChild(c);
+  });
+}
+$('needs').addEventListener('click', function () { openPanel('needs'); });
+
+/* ---------- Applying a state, and reloading it from estado.js ---------- */
+function apply(st, demo) {
+  STATE = st; isDemo = demo;
+  $('pTitle').textContent = st.project.title || '';
+  $('pLine').textContent = st.project.line || '';
+  $('clock').textContent = (st.session === 'encerrada' ? 'Parado · ' : 'Live · ') + (st.clock || '');
+  app.classList.toggle('idle', st.session === 'encerrada');
+  hint.textContent = 'arraste os nós · role para aproximar · clique para abrir' + (demo ? ' · dados de demonstração' : '');
+  buildGraph(); buildChrome();
+  if (open) { if (agentOf(open) || STATE.panels[open]) { openPanel(open, true); } else { closePanel(); } }
+  measure();
+}
+function poll() {
+  var sc = document.createElement('script');
+  sc.src = 'estado.js?t=' + Date.now();
+  sc.onload = function () {
+    sc.remove();
+    var st = window.ORQUESTRADOR_STATE; if (!st) { return; }
+    var j = JSON.stringify(st); if (j === lastJson) { return; }
+    lastJson = j; apply(normalize(JSON.parse(j)), false);
+  };
+  sc.onerror = function () { sc.remove(); };
+  document.head.appendChild(sc);
+}
+
+/* ---------- Loop ---------- */
+var last = 0;
+function frame(ms) {
+  var time = ms / 1000, dt = Math.min(0.05, time - last || 0.016); last = time;
+  step(dt, time); draw(time);
+  requestAnimationFrame(frame);
+}
+window.addEventListener('resize', measure);
+if (window.ResizeObserver) { new ResizeObserver(measure).observe(app); }
+apply(normalize(JSON.parse(JSON.stringify(DEMO))), true);
+if (document.fonts && document.fonts.ready) { document.fonts.ready.then(measure); }
+if (location.protocol === 'file:') { poll(); setInterval(poll, 2000); }
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
