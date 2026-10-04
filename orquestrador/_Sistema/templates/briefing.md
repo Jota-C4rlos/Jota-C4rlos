@@ -1,38 +1,35 @@
 ---
-cliente:
 projeto:
+cliente:
 idioma_do_video:
-idioma_do_cliente:
 prazo_entrega:
 ---
-# Briefing — roteiro
+# Briefing
 
 Marque cada campo como: ok · faltando · suposição.
 
 ## Obrigatório
-- Produto, serviço ou assunto (o que é, diferenciais, oferta ou preço se aparecer):
-- Objetivo do vídeo (vender, lançar, apresentar, engajar, captar contatos):
-- Onde será veiculado (plataformas; orgânico ou anúncio pago):
-- Público-alvo:
-- Mensagem principal (o que a pessoa deve lembrar):
-- Chamada para ação (CTA):
-- Formatos e duração (9:16, 16:9, 1:1, 4:5; segundos; número de versões):
-- Prazo e rodadas de revisão contratadas:
-- Como o vídeo será produzido (gravação, IA, animação, só o roteiro):
-- Locução e legendas (sim ou não, idioma, tipo de voz):
-- Quem aprova do lado do cliente:
+- Ideia de origem (caminho no Box ou descrição) e o que é inegociável nela:
+- Tipo de conteúdo (curta, anúncio, série, clipe, conteúdo de canal):
+- Objetivo (entreter, vender, lançar, engajar, captar contatos):
+- Onde será publicado (plataformas; orgânico ou anúncio pago):
+- Público:
+- Mensagem ou sensação principal (o que a pessoa deve lembrar ou sentir):
+- Formato e duração (9:16, 16:9, 1:1, 4:5; segundos; número de versões):
+- Prazo e rodadas de revisão:
+- Falas e locução (sim ou não, idioma, quem fala):
+- Música (trilha instrumental ou canção com letra; uso em anúncio pago?):
+- Quem aprova (o José, ou também um cliente):
 
 ## Importante
-- Ideia que o cliente trouxe e o que é inegociável nela:
-- Tom (premium, divertido, emocional, técnico...):
-- Referências que o cliente gosta e não gosta:
-- Elementos obrigatórios (preço, selo, aviso legal, site, @):
-- Restrições (o que evitar, concorrentes, promessas proibidas):
-- Pessoas no vídeo (o próprio cliente, atores, geradas por IA; autorização de imagem):
-- Material disponível (fotos, vídeos, marca do cliente):
-- Música (estilo; uso em anúncio pago?):
+- Tom (épico, divertido, emocional, sombrio, técnico...):
+- Estética desejada, se já houver (pixel, hiper-realista, 2D...):
+- Referências que agradam e que não agradam (links, DNAs do Box):
+- Personagens já existentes (de outro projeto ou da Biblioteca):
+- Elementos obrigatórios (marca, produto, texto final, @, CTA):
+- Restrições (o que evitar, temas sensíveis, promessas proibidas):
+- Ferramentas preferidas (Midjourney, Seedance ou Kling, Suno ou ElevenLabs):
 
 ## Desejável
-- Concorrentes e referências do setor:
 - Resultado esperado ou métrica:
-- Formato de entrega do roteiro (documento, tabela, PDF):
+- Próximos episódios ou variações previstas:

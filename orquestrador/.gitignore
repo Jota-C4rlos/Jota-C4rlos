@@ -1,0 +1,44 @@
+# O repositório guarda o sistema (regras, agentes, skills, templates).
+# O que é do dia a dia do José fica só no computador dele.
+
+# Projetos e cadernos dos agentes
+Projetos/*
+!Projetos/.gitkeep
+.claude/agent-memory/
+
+# Box de Ideias: ideias, referências de terceiros e DNAs
+Box_de_Ideias/ideias/*
+!Box_de_Ideias/ideias/.gitkeep
+Box_de_Ideias/referencias/**
+!Box_de_Ideias/referencias/**/
+!Box_de_Ideias/referencias/**/LEIA-ME.md
+Box_de_Ideias/dna/*
+!Box_de_Ideias/dna/.gitkeep
+
+# Material de cursos e métodos (direitos do curso e do José)
+_Sistema/academia/material/**
+!_Sistema/academia/material/**/
+!_Sistema/academia/material/**/LEIA-ME.md
+
+# Cursos em andamento e estado do painel
+_Sistema/academia/cursos/*
+!_Sistema/academia/cursos/.gitkeep
+_Sistema/painel/estado.js
+
+# Mídia
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# Obsidian
+.obsidian/workspace*.json
