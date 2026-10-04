@@ -47,7 +47,7 @@ Dados novos a coletar, sempre só observando (os hooks seguem devolvendo o resul
 - **Atividade de cada agente**: as chamadas de ferramenta feitas dentro do agente, com a hora (HH:MM). Leitura vira "Leu <arquivo>", escrita "Escreveu <arquivo>", edição "Editou <arquivo>", busca "Procurou <termo>", comando "Rodou um comando", web "Pesquisou na web", skill "Usou a skill <nome>". Guarde as 30 últimas por agente. Só nomes de arquivo, nunca o conteúdo.
 - **Retorno**: quando o agente termina, uma linha "Entregou" (ou "Bloqueado"), com o RESUMO e as PENDENCIAS no subtexto e o CUSTO na marca.
 - **Recados do mural**: os 3 últimos de hoje, com origem, destino, hora (quando vistos ao vivo) e texto.
-- **Exercícios de curso**: quando o pilar skills chama um colega para um exercício, a atividade e o retorno do colega entram nele como em qualquer chamada.
+- **Exercícios de curso**: o orquestrador chama o aluno com a ordem que o pilar skills preparou (descrição "Exercício <skill> tNN"); a atividade e o retorno do aluno entram nele como em qualquer chamada.
 
 A atividade e a ordem de serviço só existem durante a sessão. Ao abrir uma sessão nova, o agente mostra o que o status.md permite: entregas, tarefa em curso e próxima tarefa.
 

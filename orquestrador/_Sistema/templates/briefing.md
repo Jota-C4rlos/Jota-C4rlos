@@ -15,7 +15,7 @@ Marque cada campo como: ok · faltando · suposição.
 - Onde será publicado (plataformas; orgânico ou anúncio pago):
 - Público:
 - Mensagem ou sensação principal (o que a pessoa deve lembrar ou sentir):
-- Formato e duração (9:16, 16:9, 1:1, 4:5; segundos; número de versões):
+- Formato e duração (9:16, 16:9, 1:1 ou 4:5, que sai por recorte de 3:4 ou 9:16 na edição; segundos; número de versões):
 - Prazo e rodadas de revisão:
 - Falas e locução (sim ou não, idioma, quem fala):
 - Música (trilha instrumental ou canção com letra; uso em anúncio pago?):

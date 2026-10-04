@@ -1,10 +1,10 @@
 # Catálogo de skills
 
-As skills de cada pilar e o estado de cada uma. Mantido pelo pilar skills; mudança só com o "aprovado" do José.
+As skills de cada pilar e o estado de cada uma. Mantido pelo pilar skills; mudança só com o "aprovado" do José. Exceção: a nota entre parênteses de uma skill com curso aberto é atualizada pelo pilar skills sem aprovação; estado, data e linha nova, só com o aprovado.
 
 Estados: `ativa` (pronta para uso) · `rascunho` (usável, com lacunas marcadas) · `aguardando material` (não usar até o José mandar o material e o curso terminar). O estado pode trazer uma nota curta entre parênteses, que o painel mostra junto do curso.
 
-Quando um pilar tiver mais de uma opção marcada como método ou ferramenta, o orquestrador pergunta ao José qual usar antes de delegar.
+Quando um pilar tiver duas ou mais skills prontas para uso que são alternativas para a mesma função, o orquestrador pergunta ao José qual usar antes de delegar. Hoje: seedance ou kling; suno ou elevenlabs-music; roteiro-padrao ou metodo-pilli-academy (quando esta ficar `ativa`). Skills complementares (esteticas, midjourney, metodo-take, continuidade-e-fisica) são sempre usadas e não geram pergunta.
 
 | Skill | Pilar | Tipo | Para quê | Estado | Atualizada em |
 |---|---|---|---|---|---|

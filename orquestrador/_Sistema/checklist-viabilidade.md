@@ -5,7 +5,7 @@ Para cada item: ✅ ok · ⚠️ atenção (diga o porquê e a saída) · ❌ im
 1. **Briefing**: todos os itens obrigatórios estão preenchidos? As suposições estão marcadas?
 2. **Prazo**: compare com _Sistema/padroes-prazo-e-preco.md. Se estiver apertado, diga quantos dias faltam e o que cortar ou simplificar. Considere os projetos ativos em Projetos/*/status.md e o tempo de geração do José.
 3. **Escopo**: duração, número de versões, formatos e rodadas de revisão cabem no que foi combinado?
-4. **Takes**: quantos takes a duração pede, dentro da duração máxima por take do modelo de vídeo (skill do modelo). Diga quantas gerações o José terá de fazer (takes × tentativas previstas).
+4. **Takes**: quantos takes a duração pede, dentro da duração máxima por take do modelo de vídeo (skill do modelo). Diga quantas gerações o José terá de fazer (takes × tentativas previstas). A proporção do briefing é aceita pelo modelo de vídeo (skill do modelo)? Se não for, diga qual proporção gerar e como recortar na edição.
 5. **Métodos e ferramentas**: os métodos e ferramentas do plano estão prontos no catálogo (_Sistema/academia/catalogo.md)? Skill "aguardando material" não pode ser usada: diga qual alternativa vale até lá. Falta conta ou crédito em alguma ferramenta (_Sistema/ferramentas-e-contas.md)?
 6. **Estética e consistência**: a estética provável é estável na passagem de imagem para vídeo? Quantos personagens e cenários recorrentes o roteiro vai pedir?
 7. **Riscos de continuidade e física**: cenas de alto risco previstas (portas, entradas e saídas, várias pessoas, mãos, líquidos, texto na tela, diálogos longos). Diga como o plano reduz cada risco.

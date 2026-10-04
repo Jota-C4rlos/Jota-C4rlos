@@ -216,7 +216,7 @@ on('turn.complete', async ($, e, next) => {
 - Fim de um agente: o fim de turno do próprio subagente, identificado por esse id, traz a resposta final, que segue um padrão fixo: `STATUS: concluido | parcial | bloqueado`, `ENTREGA`, `RESUMO`, `PENDENCIAS`, `CUSTO`, `MURAL`. concluido vira entregue (2ª linha: o arquivo de ENTREGA). parcial vira entregue, com a pendência na 2ª linha. bloqueado vira bloqueado (2ª linha: a primeira pendência). Turno interrompido ou com erro vira bloqueado, com o motivo "interrompido" ou "erro". Resposta sem STATUS vira entregue, com "retorno fora do padrão".
 - Retomada de um agente (mensagem enviada a um agente já iniciado, para uma correção): marque-o como trabalhando de novo; o fim chega do mesmo jeito.
 - Dois agentes do mesmo tipo ao mesmo tempo: mostre a tarefa mais recente e "+1".
-- Só os 7 pilares entram no painel. Quem delega é a conversa principal; a única exceção é o pilar skills (a Academia), que chama colegas para os exercícios dos cursos abertos. O pilar chamado por ele aparece como qualquer outro (trabalhando, com a descrição da chamada na 2ª linha, e depois entregue ou bloqueado); como o exercício não tem linha na tabela de tarefas, só o bloco AGENTS mostra o fato.
+- Só os 7 pilares entram no painel. Quem delega é sempre a conversa principal, inclusive nos exercícios dos cursos: o pilar skills prepara a ordem e o orquestrador chama o aluno, com a descrição "Exercício <skill> tNN". O aluno aparece como qualquer outro (trabalhando, com a descrição da chamada na 2ª linha, e depois entregue ou bloqueado); como o exercício não tem linha na tabela de tarefas, só o bloco AGENTS mostra o fato.
 - Outros tipos de agente (Explore e afins) ficam fora do painel.
 
 **Persistido, no vault (só leitura).**

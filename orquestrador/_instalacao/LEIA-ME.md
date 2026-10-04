@@ -33,7 +33,7 @@ O escritório já está montado nesta pasta `orquestrador`: as regras, os 7 pila
 
 ## O que fica fora do git
 
-O `.gitignore` deixa só no seu computador: os projetos, as ideias, as referências e os DNAs do Box, o material dos cursos, os cadernos dos agentes e as mídias (vídeos, imagens, áudios). O repositório guarda só o sistema. Se um dia quiser sincronizar tudo pelo GitHub, use um repositório privado e revise o `.gitignore`.
+O `.gitignore` deixa só no seu computador: os projetos, o índice, as ideias, as referências e os DNAs do Box, o material dos cursos, os cadernos dos agentes e as mídias (vídeos, imagens, áudios). O repositório guarda o sistema e os textos da Biblioteca (roteiros, fichas, prompts e letras aprovados); as imagens da Biblioteca ficam só no seu computador: faça backup. Se um dia quiser sincronizar tudo pelo GitHub, use um repositório privado e revise o `.gitignore`.
 
 ## Partes visuais (instalar depois)
 

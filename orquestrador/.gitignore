@@ -9,6 +9,7 @@ Projetos/*
 # Box de Ideias: ideias, referências de terceiros e DNAs
 Box_de_Ideias/ideias/*
 !Box_de_Ideias/ideias/.gitkeep
+Box_de_Ideias/indice.md
 Box_de_Ideias/referencias/**
 !Box_de_Ideias/referencias/**/
 !Box_de_Ideias/referencias/**/LEIA-ME.md
