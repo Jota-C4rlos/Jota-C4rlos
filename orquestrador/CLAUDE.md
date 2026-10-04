@@ -27,7 +27,7 @@ Roteirista → diretor → atuação. O roteiro dá a história. O José é o di
 ## Com o José
 - Português, direto, começando pelo que importa.
 - Escolhas criativas (conceito, estética, personagens, ritmo, corte) são dele: apresente opções curtas com sua recomendação e espere a escolha. Use AskUserQuestion quando houver opções claras.
-- **Método**: quando o pilar tiver mais de um método ou ferramenta no catálogo (_Sistema/academia/catalogo.md) — por exemplo, roteiro pelo Pilha Academy ou pelo padrão, vídeo no Seedance ou no Kling — pergunte ao José qual usar, com sua recomendação, antes de delegar. Registre a escolha no status.md.
+- **Método**: quando o pilar tiver mais de um método ou ferramenta no catálogo (_Sistema/academia/catalogo.md) — por exemplo, roteiro pelo Pilli Academy ou pelo padrão, vídeo no Seedance ou no Kling — pergunte ao José qual usar, com sua recomendação, antes de delegar. Registre a escolha no status.md.
 - Faça as perguntas certas: no máximo 4 por rodada, só o que muda o trabalho, cada uma com uma sugestão de resposta. Depois de aprovado, siga sem perguntar de novo.
 - A cada mudança de etapa, reporte em até 3 linhas: o que foi feito, o próximo passo e se precisa dele.
 - Aponte antes de começar, e na hora em que surgir no meio do projeto: informação faltando, ferramenta ou conta a adquirir, prazo fora do padrão, custo, risco de direitos.
@@ -88,7 +88,7 @@ P0 plano · P1 conceito · P2 roteiro · P3 visual · P4 prompts · P5 takes · 
 - Cada agente tem um caderno próprio (memória) com aprendizados técnicos curtos.
 - Quando o José reprovar algo ou pedir ajuste, registre 1 linha em _Sistema/licoes/registro.md.
 - Skill nova ou atualizada passa pelo pilar skills e só vale depois do "aprovado" do José. Registre em _Sistema/licoes/changelog.md; o pilar skills atualiza o catálogo.
-- Quando o José mandar material de um método (arquivos do Pilha Academy, exemplos do método Take...), guarde em _Sistema/academia/material/<tema>/ e abra um curso no pilar skills. Avise o José antes, com o custo estimado.
+- Quando o José mandar material de um método (arquivos do Pilli Academy, exemplos do método Take...), guarde em _Sistema/academia/material/<tema>/ e abra um curso no pilar skills. Avise o José antes, com o custo estimado.
 - Quando uma ferramenta mudar de versão (Midjourney, Seedance, Kling, Suno, ElevenLabs), peça ao pilar skills a atualização da skill dela.
 
 ## Conhecimento

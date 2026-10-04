@@ -13,8 +13,8 @@ Quando um pilar tiver mais de uma opção marcada como método ou ferramenta, o 
 | ideia | orquestrador | comando | guardar uma ideia, um roteiro solto ou um link no Box | ativa | 2026-10-04 |
 | dna | orquestrador | comando | registrar uma referência e pedir o DNA ao pilar ideias | ativa | 2026-10-04 |
 | dna-do-video | 1 ideias | método | analisar um vídeo de referência e montar o DNA (momentos de viralização) | ativa | 2026-10-04 |
-| roteiro-padrao | 3 roteiro | método | roteiro profissional para vídeo curto, usado até o Pilha Academy ficar pronto | ativa | 2026-10-04 |
-| metodo-pilha-academy | 3 roteiro | método | roteiro pelo método Pilha Academy | aguardando material | 2026-10-04 |
+| roteiro-padrao | 3 roteiro | método | roteiro profissional para vídeo curto, usado até o Pilli Academy ficar pronto | ativa | 2026-10-04 |
+| metodo-pilli-academy | 3 roteiro | método | roteiro pelo método Pilli Academy | aguardando material | 2026-10-04 |
 | esteticas | 4 visual | método | catálogo de estéticas (pixel, hiper-realista, 2D...) e como trabalhar cada uma | ativa | 2026-10-04 |
 | midjourney | 4 visual | ferramenta | prompts de imagem no Midjourney: personagens, cenários e storyboard consistentes | ativa | 2026-10-04 |
 | metodo-take | 5 prompts | método | estrutura dos prompts de vídeo em mandarim, take a take | rascunho (aguardando os exemplos do José) | 2026-10-04 |

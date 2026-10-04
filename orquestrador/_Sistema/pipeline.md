@@ -18,7 +18,7 @@ Cada etapa termina com um entregável em arquivo e um retorno curto. O orquestra
 
 **1, brainstorm.** Duas rodadas. Na aberta, muitos caminhos curtos a partir da ideia, com o que cada um aproveita dos DNAs. O José comenta e escolhe. Na fechada, de 2 a 3 conceitos desenvolvidos. Cada rodada termina com as perguntas certas ao José.
 
-**2, roteiro.** Pelo método escolhido no catálogo (Pilha Academy quando o material estiver formado; até lá, o roteiro padrão). O roteiro define a trama, as cenas com a duração e os personagens pelo comportamento (objetivo, conflito, jeito de agir e de falar), não pela aparência. O orquestrador confere se o roteiro preserva o conceito, cabe na duração e tem gancho e fechamento.
+**2, roteiro.** Pelo método escolhido no catálogo (Pilli Academy quando o material estiver formado; até lá, o roteiro padrão). O roteiro define a trama, as cenas com a duração e os personagens pelo comportamento (objetivo, conflito, jeito de agir e de falar), não pela aparência. O orquestrador confere se o roteiro preserva o conceito, cabe na duração e tem gancho e fechamento.
 
 **3, construção visual.** O José escolhe a estética entre 2 ou 3 opções. O pilar define o visual de cada personagem e cenário e o storyboard, com os prompts de imagem para o Midjourney. O José gera e salva em 03_Visual/imagens/ com o nome indicado. O pilar confere as imagens contra as fichas (consistência e estética) e entrega o parecer. P3 é a validação do visual.
 

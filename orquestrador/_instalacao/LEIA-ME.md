@@ -28,7 +28,7 @@ O escritório já está montado nesta pasta `orquestrador`: as regras, os 7 pila
 - **Guardar uma ideia**: `/ideia` seguido do texto, do link ou do arquivo. Também dá para jogar arquivos direto em `Box_de_Ideias/ideias/`.
 - **Analisar uma referência**: salve o vídeo em `Box_de_Ideias/referencias/<categoria>/` (ou o link no `links.md` da categoria) e peça `/dna`.
 - **Começar um vídeo**: `/novo-projeto` com a ideia do Box. O orquestrador conduz os portões P0 a P6 e pergunta qual método ou ferramenta usar quando houver mais de um.
-- **Mandar material de um método**: arquivos do Pilha Academy em `_Sistema/academia/material/pilha-academy/`; os exemplos do método Take em `_Sistema/academia/material/metodo-take/`. Depois peça para abrir o curso.
+- **Mandar material de um método**: arquivos do Pilli Academy em `_Sistema/academia/material/pilli-academy/`; os exemplos do método Take em `_Sistema/academia/material/metodo-take/`. Depois peça para abrir o curso.
 - **Ferramenta mudou de versão**: peça ao orquestrador a atualização da skill da ferramenta.
 
 ## O que fica fora do git
