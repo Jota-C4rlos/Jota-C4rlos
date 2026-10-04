@@ -134,73 +134,90 @@ button:focus-visible{outline:2px solid #fad305;outline-offset:2px}
 
 /* ---------- State. DEMO is the built-in example. The real data arrives in estado.js, a file beside this
    page that sets window.ORQUESTRADOR_STATE with the same shape; the page reloads it every two seconds. ---------- */
-var COLORS = { writer: '#e6464b', form: '#d4702f', stock: '#fad305', code: '#3fae3d', visual: '#5b96cf', delivery: '#7471f2', skill: '#c936f6' };
+var COLORS = { ideias: '#e6464b', brainstorm: '#d4702f', roteiro: '#fad305', visual: '#3fae3d', prompts: '#5b96cf', musica: '#7471f2', skills: '#c936f6' };
 var DEMO = {
   clock: '14:33',
   session: 'ativa',
-  project: { title: 'Casa Aurora · sofá Aria', line: 'Plano de geração · próximo portão: P4 orçamento · entrega em 14/10, 7 dias úteis', client: 'Casa Aurora', clientTip: ['1 pendência com o cliente', 'Fotos do sofá em alta resolução, pedido em 02/10'] },
-  needs: { gate: 'P4', text: 'Aprovar o plano e o orçamento de geração', count: 1, agent: 'code' },
-  messages: [{ from: 'stock', to: 'code', time: '14:32', text: 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.' }],
+  project: { title: 'Canal próprio · A Porta Errada', line: 'Prompts · próximo portão: P4 prompts · entrega em 14/10, 7 dias úteis', client: 'Canal próprio', clientTip: ['Canal próprio', 'Projeto próprio: nada pendente com o cliente'] },
+  needs: { gate: 'P4', text: 'Aprovar os prompts dos takes', count: 1, agent: 'prompts' },
+  messages: [{ from: 'prompts', to: 'musica', time: '14:31', text: 'Take 4 tem 8 s sem fala antes da virada: a música pode crescer ali.' }],
   agents: [
-    { id: 'writer', role: 'ideia, conceito, roteiro e decupagem', state: 'entregue', label: 'entregue', headline: 'Entregou às 11:20',
-      tip: ['Entregou às 11:20', 'roteiro_v02.md'], files: ['conceitos_v01.md', 'roteiro_v01.md', 'roteiro_v02.md'],
-      rows: [['h', 'Última ordem de serviço'], ['OS', 'aurora-03', 'Roteiro e decupagem v2'], ['Objetivo', 'Reescrever o roteiro com o ajuste de tom pedido no P2'],
-        ['Entradas', '00_Briefing/briefing.md', '01_Roteiro/roteiro_v01.md e a observação do P2'], ['Entrega', '01_Roteiro/roteiro_v02.md', '01_Roteiro/decupagem_v02.md', 'abrir'],
-        ['h', 'Atividade'], ['11:02', 'Leu briefing.md'], ['11:05', 'Leu roteiro_v01.md'], ['11:14', 'Escreveu roteiro_v02.md'], ['11:19', 'Escreveu decupagem_v02.md'],
-        ['11:20', 'Entregou', 'Tom mais direto, 9 cenas, CTA mantido. Sem pendências.', 'custo 0'],
-        ['h', 'Entregas neste projeto'], ['30/09', 'conceitos_v01.md', '', 'abrir'], ['01/10', 'roteiro_v01.md', '', 'abrir'], ['hoje', 'roteiro_v02.md', '', 'abrir']] },
-    { id: 'form', role: 'direção de campanha, marca e direitos', state: 'entregue', label: 'entregue', headline: 'Entregou às 13:58',
-      tip: ['Entregou às 13:58', 'direcao-campanha_v01.md'], files: ['direcao-campanha_v01.md'],
-      rows: [['h', 'Última ordem de serviço'], ['OS', 'aurora-04', 'Direção de campanha v1'], ['Objetivo', 'Definir as regras visuais que todos seguem'],
-        ['Entrega', '02_Direcao/direcao-campanha_v01.md', 'Aprovada por você no P3, às 14:12', 'abrir'],
-        ['h', 'Atividade'], ['13:31', 'Leu briefing.md e conceitos_v01.md'], ['13:40', 'Leu o manual de marca do cliente'], ['13:57', 'Escreveu direcao-campanha_v01.md'],
-        ['13:58', 'Entregou', 'Paleta, luz, enquadramentos e o que evitar. Sem pendências.', 'custo 0']] },
-    { id: 'stock', role: 'biblioteca, inventário e assets base', state: 'trabalhando', label: 'trabalhando', headline: 'Trabalhando desde 14:28',
-      tip: ['Trabalhando desde 14:28', 'Inventário e lista de assets', 'Agora: escrevendo inventario.md'], files: [],
-      rows: [['h', 'Ordem de serviço em curso'], ['OS', 'aurora-06', 'Inventário e lista de assets'], ['Objetivo', 'Listar o que existe, o que gerar e o que licenciar'],
-        ['Entradas', '01_Roteiro/decupagem_v02.md', '02_Direcao/direcao-campanha_v01.md'], ['Entrega', '03_Assets/inventario.md'], ['Limites', 'Sem gasto nesta etapa'],
-        ['h', 'Atividade ao vivo'], ['14:28', 'Começou'], ['14:29', 'Leu decupagem_v02.md'], ['14:30', 'Listou 03_Assets/cliente/original', '14 arquivos'],
-        ['14:32', 'Deixou um recado para code no mural', 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.'],
-        ['14:33', 'Escrevendo inventario.md', '', 'agora']] },
-    { id: 'code', role: 'prompts de geração, pipeline e corte técnico', state: 'espera', label: 'espera você · P4', headline: 'Espera a sua decisão no P4',
-      tip: ['Espera a sua decisão no P4', 'plano-geracao_v01.md, entregue às 14:30'], files: ['plano-geracao_v01.md'],
-      rows: [['h', 'Espera você'], ['P4', 'Aprovar o plano e o orçamento de geração', '12 cenas · 30 gerações previstas · faixa de US$ 40 a 60', 'abrir'],
-        ['h', 'Última ordem de serviço'], ['OS', 'aurora-05', 'Plano de geração v1'], ['Objetivo', 'Prompts por cena, ferramenta, modelo e custo estimado'],
-        ['Entrega', '04_Producao/plano-geracao_v01.md', '', 'abrir'],
-        ['h', 'Atividade'], ['14:14', 'Leu decupagem_v02.md e direcao-campanha_v01.md'], ['14:29', 'Escreveu plano-geracao_v01.md'],
-        ['14:30', 'Entregou', '12 cenas, margem de refação de 25%. Pendência: fotos em alta do sofá.', 'custo 0'],
-        ['h', 'Recados'], ['14:32', 'De stock', 'Faltam fotos em alta do sofá. No plano, use as do briefing como referência.'],
-        ['h', 'A seguir'], ['tarefa 7', 'Fichas de geração (modo manual)', 'Começa depois do P4']] },
-    { id: 'visual', role: 'revisão de qualidade, estética e impacto', state: 'livre', label: 'livre', headline: 'Livre',
-      tip: ['Livre', 'Próxima tarefa: revisão do corte técnico'], files: [],
-      rows: [['h', 'A seguir'], ['tarefa 9', 'Revisão do corte técnico', 'Começa quando code entregar o corte'], ['h', 'Entregas neste projeto'], ['—', 'Nenhuma ainda']] },
-    { id: 'delivery', role: 'pacote final, nomes e conferência', state: 'livre', label: 'livre', headline: 'Livre',
-      tip: ['Livre', 'Próxima tarefa: pacote de entrega'], files: [],
-      rows: [['h', 'A seguir'], ['tarefa 10', 'Pacote de entrega', 'Começa depois do acabamento fino'], ['h', 'Entregas neste projeto'], ['—', 'Nenhuma ainda']] },
-    { id: 'skill', role: 'Academia: cursos, treino e retrospectiva', state: 'livre', label: 'livre', headline: 'Livre',
-      tip: ['Livre · Academia', '1 curso aberto: code · higgsfield-api'], files: [], courses: [{ name: 'higgsfield-api', student: 'code' }],
-      rows: [['h', 'Cursos abertos'], ['01/10', 'code · higgsfield-api', 'Espera a API da ferramenta de geração'], ['h', 'A seguir'], ['tarefa 11', 'Retrospectiva do projeto', 'Depois da entrega'],
-        ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Todos os agentes']] }
+    { id: 'ideias', role: 'ideias, referências e DNA dos vídeos', state: 'entregue', label: 'entregue', headline: 'Entregou às 09:40',
+      tip: ['Entregou às 09:40', 'ficha-ideia.md'], files: ['ficha-ideia.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'porta-errada-01', 'Ficha da ideia'], ['Objetivo', 'Preparar a ficha da ideia com os DNAs relacionados'], ['Método', 'padrão do pilar'],
+        ['Entradas', 'Box_de_Ideias/ideias/2026-10-04_porta-errada.md', 'Box_de_Ideias/indice.md e os DNAs de criativos-ads'], ['Entrega', '00_Briefing/ficha-ideia.md', '', 'abrir'],
+        ['h', 'Atividade'], ['09:31', 'Leu 2026-10-04_porta-errada.md'], ['09:32', 'Leu indice.md'], ['09:33', 'Procurou "porta" nos DNAs'], ['09:36', 'Leu os 2 DNAs relacionados'], ['09:39', 'Escreveu ficha-ideia.md'],
+        ['09:40', 'Entregou', 'Ideia, gancho provável e o que os 2 DNAs ensinam. Sem pendências.', 'custo 0'],
+        ['h', 'Entregas neste projeto'], ['hoje', 'ficha-ideia.md', '', 'abrir']] },
+    { id: 'brainstorm', role: 'brainstorm em cima da ideia', state: 'entregue', label: 'entregue', headline: 'Entregou às 10:15',
+      tip: ['Entregou às 10:15', 'conceito_v01.md'], files: ['brainstorm_v01.md', 'conceito_v01.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'porta-errada-03', 'Conceitos'], ['Objetivo', 'Desenvolver os caminhos escolhidos em 2 a 3 conceitos'], ['Método', 'padrão do pilar'],
+        ['Entradas', '01_Brainstorm/brainstorm_v01.md', 'com os caminhos 2 e 5 marcados por você'], ['Entrega', '01_Brainstorm/conceito_v01.md', 'Aprovado por você no P1, às 10:22', 'abrir'],
+        ['h', 'Atividade'], ['10:02', 'Leu brainstorm_v01.md'], ['10:03', 'Leu ficha-ideia.md'], ['10:13', 'Escreveu conceito_v01.md'],
+        ['10:15', 'Entregou', '3 conceitos, com a recomendação no 2. Sem pendências.', 'custo 0'],
+        ['h', 'Entregas neste projeto'], ['hoje', 'brainstorm_v01.md', '', 'abrir'], ['hoje', 'conceito_v01.md', '', 'abrir']] },
+    { id: 'roteiro', role: 'trama, cenas e personagens', state: 'entregue', label: 'entregue', headline: 'Entregou às 11:20',
+      tip: ['Entregou às 11:20', 'roteiro_v02.md'], files: ['roteiro_v01.md', 'personagens_v01.md', 'universo_v01.md', 'roteiro_v02.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'porta-errada-05', 'Roteiro v2'], ['Objetivo', 'Reescrever o roteiro com o ajuste pedido no P2'], ['Método', 'roteiro-padrao'],
+        ['Entradas', '02_Roteiro/roteiro_v01.md', 'e a observação do P2: virada mais cedo'], ['Entrega', '02_Roteiro/roteiro_v02.md', '', 'abrir'],
+        ['h', 'Atividade'], ['11:03', 'Leu roteiro_v01.md'], ['11:04', 'Usou a skill roteiro-padrao'], ['11:06', 'Leu personagens_v01.md'], ['11:18', 'Escreveu roteiro_v02.md'],
+        ['11:20', 'Entregou', 'Virada aos 38 s, 6 cenas, gancho e fechamento mantidos. Sem pendências.', 'custo 0'],
+        ['h', 'Entregas neste projeto'], ['hoje', 'roteiro_v01.md', '', 'abrir'], ['hoje', 'personagens_v01.md', '', 'abrir'], ['hoje', 'universo_v01.md', '', 'abrir'], ['hoje', 'roteiro_v02.md', '', 'abrir']] },
+    { id: 'visual', role: 'estética, personagens, cenários e storyboard', state: 'entregue', label: 'entregue', headline: 'Entregou às 13:58',
+      tip: ['Entregou às 13:58', 'storyboard_v01.md'], files: ['estetica_v01.md', 'personagens-visual_v01.md', 'cenarios_v01.md', 'storyboard_v01.md'],
+      rows: [['h', 'Última ordem de serviço'], ['OS', 'porta-errada-07', 'Storyboard v1'], ['Objetivo', 'Storyboard das 6 cenas, com os prompts de imagem para o Midjourney'], ['Método', 'esteticas (hiper-realista) e midjourney'],
+        ['Entradas', '02_Roteiro/roteiro_v02.md', '03_Visual/estetica_v01.md e personagens-visual_v01.md'], ['Entrega', '03_Visual/storyboard_v01.md', 'Aprovado por você no P3, às 14:12', 'abrir'],
+        ['h', 'Atividade'], ['13:32', 'Leu roteiro_v02.md'], ['13:34', 'Leu personagens-visual_v01.md'], ['13:41', 'Usou a skill continuidade-e-fisica'], ['13:56', 'Escreveu storyboard_v01.md'],
+        ['13:58', 'Entregou', '6 quadros e 6 prompts de imagem em inglês, com a tradução. Sem pendências.', 'custo 0'],
+        ['h', 'Entregas neste projeto'], ['hoje', 'estetica_v01.md', '', 'abrir'], ['hoje', 'personagens-visual_v01.md', '', 'abrir'], ['hoje', 'cenarios_v01.md', '', 'abrir'], ['hoje', 'storyboard_v01.md', '', 'abrir']] },
+    { id: 'prompts', role: 'prompts em mandarim, continuidade e ajustes', state: 'espera', label: 'espera você · P4', headline: 'Espera a sua decisão no P4',
+      tip: ['Espera a sua decisão no P4', 'takes_v01.md, entregue às 14:30'], files: ['plano-takes_v01.md', 'takes_v01.md', 'revisao_v01.md'],
+      rows: [['h', 'Espera você'], ['P4', 'Aprovar os prompts dos takes', '6 takes · Seedance · 9:16', 'abrir'],
+        ['h', 'Última ordem de serviço'], ['OS', 'porta-errada-08', 'Takes v1'], ['Objetivo', 'Prompts dos 6 takes em mandarim, com a tradução e a revisão'], ['Método', 'metodo-take e seedance'],
+        ['Entradas', '02_Roteiro/roteiro_v02.md', '03_Visual/storyboard_v01.md e personagens-visual_v01.md'], ['Entrega', '04_Prompts/takes_v01.md', 'com plano-takes_v01.md e revisao_v01.md', 'abrir'],
+        ['h', 'Atividade'], ['14:14', 'Leu roteiro_v02.md e storyboard_v01.md'], ['14:16', 'Usou a skill seedance'], ['14:22', 'Escreveu plano-takes_v01.md'], ['14:27', 'Escreveu takes_v01.md'], ['14:29', 'Escreveu revisao_v01.md'],
+        ['14:30', 'Entregou', '6 takes de 10 s. Revisão de continuidade sem erro: porta, figurino e quem sai primeiro. Sem pendências.', 'custo 0'],
+        ['h', 'Recados'], ['14:31', 'Para musica', 'Take 4 tem 8 s sem fala antes da virada: a música pode crescer ali.'],
+        ['h', 'Curso aberto'], ['03/10', 'metodo-take', 'Aluno no curso do pilar skills. Espera os exemplos do José'],
+        ['h', 'A seguir'], ['tarefa 10', 'Ajustes dos takes', 'Começa quando você gerar os takes e apontar o que errou']] },
+    { id: 'musica', role: 'trilha no Suno e no ElevenLabs', state: 'trabalhando', label: 'trabalhando', headline: 'Trabalhando desde 14:28',
+      tip: ['Trabalhando desde 14:28', 'Música v1', 'Agora: escrevendo musica_v01.md'], files: [],
+      rows: [['h', 'Ordem de serviço em curso'], ['OS', 'porta-errada-09', 'Música v1'], ['Objetivo', 'Conceito musical e prompts de estilo para o Suno, com as seções no tempo dos 60 s'], ['Método', 'suno'],
+        ['Entradas', '02_Roteiro/roteiro_v02.md', '03_Visual/estetica_v01.md'], ['Entrega', '06_Musica/musica_v01.md'], ['Limites', 'Trilha instrumental · você gera no Suno'],
+        ['h', 'Atividade ao vivo'], ['14:28', 'Começou'], ['14:29', 'Leu roteiro_v02.md'], ['14:29', 'Leu estetica_v01.md'], ['14:30', 'Usou a skill suno'], ['14:32', 'Pesquisou na web'],
+        ['14:33', 'Escrevendo musica_v01.md', '', 'agora'],
+        ['h', 'Recados'], ['14:31', 'De prompts', 'Take 4 tem 8 s sem fala antes da virada: a música pode crescer ali.']] },
+    { id: 'skills', role: 'skills, cursos e retrospectiva', state: 'livre', label: 'livre', headline: 'Livre',
+      tip: ['Livre · Academia', '1 curso aberto: prompts · metodo-take', 'Aguardando material: metodo-pilha-academy'], files: [], courses: [{ name: 'metodo-take', student: 'prompts' }],
+      rows: [['h', 'Cursos abertos'], ['03/10', 'prompts · metodo-take', 'Espera os exemplos do José'],
+        ['h', 'Aguardando material'], ['roteiro', 'metodo-pilha-academy', 'Espera os arquivos do Pilha Academy'],
+        ['h', 'A seguir'], ['tarefa 11', 'Retrospectiva', 'Depois do P6'],
+        ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Todos os pilares']] }
   ],
   panels: {
-    needs: { kicker: 'Needs you', title: 'O que espera você', state: '1 decisão sua · 1 pendência com o cliente', chip: null,
-      rows: [['h', 'Decisões suas'], ['P4', 'Aprovar o plano e o orçamento de geração', '12 cenas · 30 gerações previstas · faixa de US$ 40 a 60', 'abrir'],
-        ['arquivo', '04_Producao/plano-geracao_v01.md', 'Entregue por code às 14:30'], ['h', 'Com o cliente'], ['02/10', 'Fotos do sofá em alta resolução', 'Pedido feito, sem resposta ainda']] },
-    gates: { kicker: 'Gates', title: 'Portões', state: '4 de 7 aprovados', chip: ['Gates', '4 de 7', 'atual: P4'], tip: ['Portão atual: P4 orçamento', 'P3 direção aprovado hoje às 14:12'],
-      rows: [['P0', 'Viabilidade e plano', 'Aprovado em 28/09', 'aprovado'], ['P1', 'Conceito', 'Aprovado em 30/09', 'aprovado'], ['P2', 'Roteiro e decupagem', 'Ajustes em 01/10, aprovado hoje às 11:26', 'aprovado'],
-        ['P3', 'Direção de campanha', 'Aprovado hoje às 14:12', 'aprovado'], ['P4', 'Plano e orçamento de geração', 'O plano está pronto e espera a sua decisão', 'espera você'],
-        ['P5', 'Corte revisado', '', 'a seguir'], ['P6', 'Pacote de entrega', '', 'a seguir']] },
-    tasks: { kicker: 'Tasks', title: 'Tarefas', state: '5 de 11 entregues', chip: ['Tasks', '5 de 11', 'stock em andamento'], tip: ['Em andamento', 'stock · Inventário e lista de assets', 'A seguir: code · Fichas de geração'],
-      rows: [['writer', 'Conceitos v1', '', 'entregue'], ['writer', 'Roteiro e decupagem v1', '', 'entregue'], ['writer', 'Roteiro e decupagem v2', '', 'entregue'], ['form', 'Direção de campanha v1', '', 'entregue'],
-        ['code', 'Plano de geração v1', '', 'entregue'], ['stock', 'Inventário e lista de assets', 'Desde 14:28', 'em andamento'], ['code', 'Fichas de geração (modo manual)', '', 'a fazer'],
-        ['code', 'Corte técnico e timeline XML', '', 'a fazer'], ['visual', 'Revisão do corte técnico', '', 'a fazer'], ['delivery', 'Pacote de entrega', '', 'a fazer'], ['skill', 'Retrospectiva', '', 'a fazer']] },
-    log: { kicker: 'Log', title: 'Registro', state: 'Hoje', chip: ['Log', '14:32', 'recado de stock'], tip: ['14:32 stock deixou um recado para code', '14:30 code entregou o plano de geração', '14:12 José aprovou o P3'],
-      rows: [['14:32', 'stock deixou um recado para code no mural'], ['14:30', 'code entregou o plano de geração'], ['14:28', 'stock começou o inventário'], ['14:14', 'code começou o plano de geração'],
-        ['14:12', 'José aprovou o P3'], ['13:58', 'form entregou a direção de campanha'], ['13:31', 'form começou a direção de campanha'], ['11:26', 'José aprovou o P2'], ['11:20', 'writer entregou o roteiro v2'], ['11:02', 'writer começou o roteiro v2']] },
-    budget: { kicker: 'Budget', title: 'Orçamento de geração', state: 'A aprovar no P4', chip: ['Budget', 'a aprovar', 'no P4'], tip: ['Faixa prevista: US$ 40 a 60', '12 cenas, 30 gerações. Gasto até agora: US$ 0'],
-      rows: [['faixa', 'US$ 40 a 60', '12 cenas · 30 gerações previstas · margem de refação de 25%'], ['aprovado', 'Ainda não', 'Você decide no P4'], ['gasto', 'US$ 0'], ['modo', 'Manual', 'Você gera na plataforma a partir das fichas, até a API estar configurada']] },
-    academy: { kicker: 'Academy', title: 'Academia', state: '1 curso aberto', chip: ['Academy', '1 curso', 'code'], tip: ['code · higgsfield-api', 'Aberto em 01/10. Espera a API da ferramenta de geração'],
-      rows: [['h', 'Cursos abertos'], ['01/10', 'code · higgsfield-api', 'Espera a API da ferramenta de geração'], ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Padrões de trabalho, mural, caderno e retorno']] }
+    needs: { kicker: 'Needs you', title: 'O que espera você', state: '1 decisão sua', chip: null,
+      rows: [['h', 'Decisões suas'], ['P4', 'Aprovar os prompts dos takes', '6 takes · Seedance · 9:16', 'abrir'],
+        ['arquivo', '04_Prompts/takes_v01.md', 'Entregue por prompts às 14:30, com plano-takes_v01.md e revisao_v01.md']] },
+    gates: { kicker: 'Gates', title: 'Portões', state: '4 de 7 aprovados', chip: ['Gates', '4 de 7', 'atual: P4'], tip: ['Portão atual: P4 prompts', 'P3 visual aprovado hoje às 14:12'],
+      rows: [['P0', 'Plano', 'Aprovado hoje às 09:52', 'aprovado'], ['P1', 'Conceito', 'Aprovado hoje às 10:22', 'aprovado'], ['P2', 'Roteiro', 'Ajustes às 10:56, aprovado às 11:26', 'aprovado'],
+        ['P3', 'Visual', 'Aprovado hoje às 14:12', 'aprovado'], ['P4', 'Prompts', 'Os prompts dos 6 takes estão prontos e esperam a sua decisão', 'espera você'],
+        ['P5', 'Takes', '', 'a seguir'], ['P6', 'Trilha', '', 'a seguir']] },
+    tasks: { kicker: 'Tasks', title: 'Tarefas', state: '8 de 11 entregues', chip: ['Tasks', '8 de 11', 'musica em andamento'], tip: ['Em andamento', 'musica · Música v1', 'A seguir: prompts · Ajustes dos takes'],
+      rows: [['ideias', 'Ficha da ideia', '', 'entregue'], ['brainstorm', 'Brainstorm aberto', '', 'entregue'], ['brainstorm', 'Conceitos', '', 'entregue'], ['roteiro', 'Roteiro v1', '', 'entregue'],
+        ['roteiro', 'Roteiro v2', '', 'entregue'], ['visual', 'Estética e personagens', '', 'entregue'], ['visual', 'Storyboard v1', '', 'entregue'], ['prompts', 'Takes v1', '', 'entregue'],
+        ['musica', 'Música v1', 'Desde 14:28', 'em andamento'], ['prompts', 'Ajustes dos takes', '', 'a fazer'], ['skills', 'Retrospectiva', '', 'a fazer']] },
+    log: { kicker: 'Log', title: 'Registro', state: 'Hoje', chip: ['Log', '14:31', 'recado de prompts'], tip: ['14:31 prompts deixou um recado para musica', '14:30 prompts entregou os takes v1', '14:28 musica começou a música v1'],
+      rows: [['14:31', 'prompts deixou um recado para musica no mural', 'Take 4 tem 8 s sem fala antes da virada: a música pode crescer ali.'], ['14:30', 'prompts entregou os takes v1'], ['14:28', 'musica começou a música v1'],
+        ['14:12', 'José aprovou o P3'], ['13:58', 'visual entregou o storyboard'], ['11:26', 'José aprovou o P2'], ['11:20', 'roteiro entregou o roteiro v2'],
+        ['10:15', 'brainstorm entregou os conceitos'], ['09:40', 'ideias entregou a ficha da ideia']] },
+    generation: { kicker: 'Generation', title: 'Geração dos takes', state: 'Takes depois do P4 · Seedance', chip: ['Generation', 'depois do P4', 'takes no Seedance'], tip: ['Takes depois do P4', '6 takes previstos no Seedance, em 9:16. Você gera; o prompts ajusta'],
+      rows: [['h', 'Takes'], ['—', 'A tabela de takes nasce quando você aprovar o P4', '6 takes previstos em 04_Prompts/takes_v01.md'],
+        ['h', 'Modelos'], ['vídeo', 'Seedance', 'Escolhido no P0'], ['imagem', 'Midjourney'], ['música', 'Suno'],
+        ['h', 'Como funciona'], ['gerar', 'Você gera cada take e salva em 05_Geracao/takes/', 'Nome: take-NN_tNN.mp4'], ['ajuste', 'Take com erro volta ao prompts', 'Ele muda só o que deu errado e devolve o prompt completo']] },
+    academy: { kicker: 'Academy', title: 'Academia', state: '1 curso aberto', chip: ['Academy', '1 curso', 'prompts'], tip: ['prompts · metodo-take', 'Aberto em 03/10. Espera os exemplos do José', 'Aguardando material: metodo-pilha-academy'],
+      rows: [['h', 'Cursos abertos'], ['03/10', 'prompts · metodo-take', 'Espera os exemplos do José'],
+        ['h', 'Aguardando material'], ['roteiro', 'metodo-pilha-academy', 'Espera os arquivos do Pilha Academy em _Sistema/academia/material/pilha-academy/'],
+        ['h', 'Catálogo'], ['fixo', 'orquestrador-padroes', 'Padrões de trabalho, mural, caderno e retorno']] }
   }
 };
 var STATE = null, isDemo = true, lastJson = '';
@@ -220,7 +237,7 @@ var app = $('app'), canvas = $('stage'), ctx = canvas.getContext('2d');
 var topEl = app.querySelector('.top'), dock = $('dock'), panel = $('panel'), tip = $('tip'), hint = $('hint');
 var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var INK = '#f4f3f2', GROUND = '#161616';
-var ANGLES = { writer: 210, form: 170, stock: 130, code: 90, visual: 50, delivery: 10, skill: -30 };
+var ANGLES = { ideias: 210, brainstorm: 170, roteiro: 130, visual: 90, prompts: 50, musica: 10, skills: -30 };
 
 /* ---------- Graph model: rebuilt whenever the state changes; nodes keep their place ---------- */
 var nodes = [], links = [], byId = {}, neighbors = {};
@@ -264,7 +281,7 @@ function buildGraph() {
   hover = hover ? byId[hover.id] || null : null; drag = null;
 }
 var cloud = [];
-var SPECTRUM = ['writer', 'form', 'stock', 'code', 'visual', 'delivery', 'skill'].map(function (id) { return COLORS[id]; });
+var SPECTRUM = ['ideias', 'brainstorm', 'roteiro', 'visual', 'prompts', 'musica', 'skills'].map(function (id) { return COLORS[id]; });
 for (var ci = 0; ci < 90; ci++) { cloud.push({ a: Math.random() * 6.28, r: Math.sqrt(Math.random()), s: (0.2 + Math.random() * 0.6) * (Math.random() < 0.5 ? -1 : 1), c: SPECTRUM[ci % SPECTRUM.length] }); }
 
 /* ---------- Layout: where each node rests, from the free area of the screen ---------- */
@@ -620,7 +637,7 @@ function buildChrome() {
     needsBtn.appendChild(what); needsBtn.appendChild(el('span', 'tag', 'Needs you · ' + STATE.needs.count));
   } else { needsBtn.appendChild(el('b', '', 'Nada pendente')); }
   needsBtn.classList.toggle('quiet', !STATE.needs.count);
-  ['gates', 'tasks', 'log', 'budget', 'academy'].forEach(function (key) {
+  ['gates', 'tasks', 'log', 'generation', 'academy'].forEach(function (key) {
     var p = STATE.panels[key]; if (!p || !p.chip) { return; }
     var c = el('button', 'chip'); c.type = 'button'; c.setAttribute('data-open', key); c.setAttribute('aria-pressed', open === key ? 'true' : 'false');
     c.appendChild(el('span', 'label', p.chip[0])); c.appendChild(el('strong', '', p.chip[1])); c.appendChild(el('small', '', p.chip[2] || ''));

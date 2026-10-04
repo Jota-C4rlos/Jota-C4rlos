@@ -6,7 +6,7 @@ O painel de agentes e a rede leem o status.md de cada projeto. Siga este formato
 Uma `chave: valor` por linha.
 - `projeto`: nome curto. `cliente`: o nome do cliente, ou `proprio`.
 - `resumo`: uma linha sobre o projeto (ex.: Curta por IA · 60 s · 9:16 · hiper-realista).
-- `ideia`: o caminho da ideia no Box (ex.: Box_de_Ideias/ideias/2026-10-04_porta-errada.md), ou `nova`.
+- `ideia`: o caminho da ideia no Box (ex.: Box_de_Ideias/ideias/2026-09-28_porta-errada.md), ou `nova`.
 - `formato`: proporção e duração (ex.: 9:16 · 60 s).
 - `metodo_roteiro`, `estetica`, `modelo_imagem`, `modelo_video`, `modelo_musica`: as escolhas do José, com o nome da skill ou da ferramenta (ex.: roteiro-padrao, hiper-realista, Midjourney, Seedance, Suno). Vazio até a escolha.
 - `etapa`: intake, brainstorm, roteiro, visual, prompts, geração, música ou retrospectiva. Com a música em paralelo, vale a etapa principal.

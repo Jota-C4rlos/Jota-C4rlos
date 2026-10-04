@@ -2,7 +2,7 @@
 
 As skills de cada pilar e o estado de cada uma. Mantido pelo pilar skills; mudança só com o "aprovado" do José.
 
-Estados: `ativa` (pronta para uso) · `rascunho` (usável, com lacunas marcadas) · `aguardando material` (não usar até o José mandar o material e o curso terminar).
+Estados: `ativa` (pronta para uso) · `rascunho` (usável, com lacunas marcadas) · `aguardando material` (não usar até o José mandar o material e o curso terminar). O estado pode trazer uma nota curta entre parênteses, que o painel mostra junto do curso.
 
 Quando um pilar tiver mais de uma opção marcada como método ou ferramenta, o orquestrador pergunta ao José qual usar antes de delegar.
 
